@@ -10,14 +10,18 @@ Object::Object(int x, int y, int z)
 	m_position = std::make_shared<Vector3>(x, y, z);
 }
 
-void Object::Render(BYTE* s, int d)
+void Object::Render(BYTE* s, float d)
 {
 	//BYTE* screen = HAPI.GetScreenPointer();
 
-	int screenX = ((m_position->GetX() - (0)) * d) / ((m_position->GetZ() + d) + (0));
-	int screenY = ((m_position->GetY() - (0)) * d) / ((m_position->GetZ() + d) + (0));
+	float testX = m_position->GetX();
+	float testY = m_position->GetY();
+	float testZ = m_position->GetZ();
 
-	int offset = screenX + screenY * 1024;
+	float screenX = ((d * (m_position->GetX() - 512.0f)) / ((d + m_position->GetZ())) + 512.0f);
+	float screenY = ((d * (m_position->GetY() - 384.0f)) / ((d + m_position->GetZ())) + 384.0f);
+
+	int offset = screenY + screenX * 768;
 
 	if (offset >= 0) {
 		s[offset * 4] = 255;

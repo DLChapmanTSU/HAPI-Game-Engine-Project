@@ -43,7 +43,7 @@ void HAPI_Main()
 
 	BYTE* screen = HAPI.GetScreenPointer();
 
-	std::shared_ptr<Object> star = std::make_shared<Object>(10, 758, 10);
+	std::shared_ptr<Object> star = std::make_shared<Object>(200, 200, 500);
 
 	//for (size_t i = 0; i < 786432; i++)
 	//{
@@ -65,7 +65,8 @@ void HAPI_Main()
 		//HAPI.RenderText(500, 500, HAPI_TColour::RED, HAPI_TColour::WHITE, 5.0f, "Happy is fun!", 50);
 		//memset(screen, 0, width * height * 4);
 
-		star->Render(screen, 10);
+		star->Render(screen, 100.0f);
+		
 		//std::shared_ptr<Vector3> pos = star->GetPosition();
 		//if (pos->GetZ() >= 1) {
 		//	int posZ = pos->GetZ();
@@ -77,7 +78,6 @@ void HAPI_Main()
 		//}
 		//star->SetPosition(*pos);
 		
-		
 
 		//HAPI.SetControllerRumble(0, 65535, 65535);
 		//if ((pixelTarget * 4) < (width * height * 4)) {
@@ -87,8 +87,8 @@ void HAPI_Main()
 		//	pixelTarget++;
 		//}
 		
-		HorizontalLine(255, 500, 200, width, height);
-		VerticalLine(35, 35, 50, width, height);
+		//HorizontalLine(255, 500, 200, width, height);
+		//VerticalLine(35, 35, 50, width, height);
 	}
 
 	
