@@ -22,6 +22,7 @@
 #include <HAPI_lib.h>
 
 #include <memory>
+#include <random>
 
 // HAPI itself is wrapped in the HAPISPACE namespace
 using namespace HAPISPACE;
@@ -58,34 +59,42 @@ void HAPI_Main()
 
 	//HAPI.SetShowFPS(true);
 
-	
+	std::vector<std::shared_ptr<Object>> stars;
+	std::srand(time(NULL));
+
+	for (size_t i = 0; i < 1000; i++)
+	{
+		stars.push_back(std::make_shared<Object>(std::rand() % width, std::rand() % height, 500));
+	}
+
+	//int delay{ 0 };
 
 	while (HAPI.Update()) {
-		//HAPI.RenderText(100, 100, HAPI_TColour::BLUE, "I am HAPI", 50);
-		//HAPI.RenderText(500, 500, HAPI_TColour::RED, HAPI_TColour::WHITE, 5.0f, "Happy is fun!", 50);
-		//memset(screen, 0, width * height * 4);
 
-		star->Render(screen, 100.0f);
-		
-		//std::shared_ptr<Vector3> pos = star->GetPosition();
-		//if (pos->GetZ() >= 1) {
-		//	int posZ = pos->GetZ();
-		//	posZ--;
-		//	pos->SetZ(posZ);
+		memset(screen, 0, width * height * 4);
+
+		for (std::shared_ptr<Object> s : stars) {
+			if (s->GetPosition()->GetZ() <= 0) {
+				s->SetPosition(Vector3(std::rand() % width, std::rand() % height, 500));
+			}
+			else {
+				s->Transform(Vector3(0.0f, 0.0f, -1.0f));
+			}
+
+			s->Render(screen, 100.0f, height, width);
+		}
+
+		//if (delay >= 100) {
+		//	delay = 0;
+			
 		//}
 		//else {
-		//	pos->SetZ(10);
+		//	delay++;
 		//}
-		//star->SetPosition(*pos);
 		
-
-		//HAPI.SetControllerRumble(0, 65535, 65535);
-		//if ((pixelTarget * 4) < (width * height * 4)) {
-		//	screen[pixelTarget * 4] = 0;
-		//	screen[(pixelTarget * 4) + 1] = 255;
-		//	screen[(pixelTarget * 4) + 2] = 0;
-		//	pixelTarget++;
-		//}
+		//star->Render(screen, 100.0f);
+		
+		
 		
 		//HorizontalLine(255, 500, 200, width, height);
 		//VerticalLine(35, 35, 50, width, height);
