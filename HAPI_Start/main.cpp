@@ -64,33 +64,33 @@ void HAPI_Main()
 
 	for (size_t i = 0; i < 1000; i++)
 	{
-		stars.push_back(std::make_shared<Object>(std::rand() % width, std::rand() % height, 500));
+		stars.push_back(std::make_shared<Object>(std::rand() % width, std::rand() % height, 500 - (std::rand() % 100)));
 	}
 
-	//int delay{ 0 };
+	int delay{ 0 };
 
 	while (HAPI.Update()) {
 
-		memset(screen, 0, width * height * 4);
+		
 
-		for (std::shared_ptr<Object> s : stars) {
-			if (s->GetPosition()->GetZ() <= 0) {
-				s->SetPosition(Vector3(std::rand() % width, std::rand() % height, 500));
-			}
-			else {
-				s->Transform(Vector3(0.0f, 0.0f, -1.0f));
-			}
+		if (delay >= 100) {
+			delay = 0;
+			memset(screen, 0, width * height * 4);
 
-			s->Render(screen, 100.0f, height, width);
+			for (std::shared_ptr<Object> s : stars) {
+				if (s->GetPosition()->GetZ() <= 0) {
+					s->SetPosition(Vector3(std::rand() % width, std::rand() % height, 500 - (std::rand() % 100)));
+				}
+				else {
+					s->Transform(Vector3(0.0f, 0.0f, -1.0f));
+				}
+
+				s->Render(screen, 500.0f, height, width);
+			}
 		}
-
-		//if (delay >= 100) {
-		//	delay = 0;
-			
-		//}
-		//else {
-		//	delay++;
-		//}
+		else {
+			delay++;
+		}
 		
 		//star->Render(screen, 100.0f);
 		
