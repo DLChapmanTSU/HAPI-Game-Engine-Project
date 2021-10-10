@@ -14,6 +14,25 @@ Object::Object(HAPI_TColour c, int x, int y, int z)
 void Object::Render(BYTE*& s, float d, float h, float w)
 {
 	//Generic Sprite Rendering Here
+	BYTE* texture{ nullptr };
+	int width{ 64 };
+	int height{ 64 };
+
+	if (!HAPI.LoadTexture(m_sprite, &texture, width, height)) {
+		//No load
+	}
+
+	BYTE* screenPointer = s + (int)(m_position->GetX() + m_position->GetY() * w) * 4;
+	BYTE* texturePointer = texture;
+
+	for (size_t i = 0; i < height; i++)
+	{
+		std::memcpy(screenPointer, texturePointer, (int)width * 4);
+
+		texturePointer += (int)width * 4;
+
+		screenPointer += (int)w * 4;
+	}
 }
 
 void Object::SetPosition(Vector3& v)
