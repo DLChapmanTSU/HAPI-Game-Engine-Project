@@ -5,33 +5,61 @@
 
 using namespace HAPISPACE;
 
-Object::Object(HAPI_TColour c, int x, int y, int z)
+Object::Object(HAPI_TColour c, int x, int y, int z, bool t)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
 	m_hue = c;
+	m_hasTransparency = t;
 }
 
 void Object::Render(BYTE*& s, float d, float h, float w)
 {
 	//Generic Sprite Rendering Here
 	BYTE* texture{ nullptr };
-	int width{ 64 };
-	int height{ 64 };
+	int textureWidth{ 64 };
+	int textureHeight{ 64 };
 
-	if (!HAPI.LoadTexture(m_sprite, &texture, width, height)) {
+	if (!HAPI.LoadTexture(m_sprite, &texture, textureWidth, textureHeight)) {
 		//No load
 	}
 
 	BYTE* screenPointer = s + (int)(m_position->GetX() + m_position->GetY() * w) * 4;
 	BYTE* texturePointer = texture;
 
-	for (size_t i = 0; i < height; i++)
-	{
-		std::memcpy(screenPointer, texturePointer, (int)width * 4);
+	if (m_hasTransparency == false) {
+		for (size_t i = 0; i < textureHeight; i++)
+		{
+			std::memcpy(screenPointer, texturePointer, (int)textureWidth * 4);
 
-		texturePointer += (int)width * 4;
+			texturePointer += (int)textureWidth * 4;
 
-		screenPointer += (int)w * 4;
+			screenPointer += (int)w * 4;
+		}
+	}
+	else {
+		int lineEndIncrement = (w * h) * 4;
+		for (size_t i = 0; i < textureWidth * textureHeight; i++)
+		{
+			BYTE red = texturePointer[0];
+			BYTE green = texturePointer[1];
+			BYTE blue = texturePointer[2];
+			BYTE alpha = texturePointer[3];
+
+			float mod = alpha / 255.0f;
+
+			screenPointer[0] = (BYTE)(mod * red + (1.0f - mod) * screenPointer[0]);
+			screenPointer[1] = (BYTE)(mod * green + (1.0f - mod) * screenPointer[1]);
+			screenPointer[2] = (BYTE)(mod * blue + (1.0f - mod) * screenPointer[2]);
+
+			texturePointer += 4;
+
+			if (i % textureWidth == 0) {
+				screenPointer += lineEndIncrement;
+			}
+			else {
+				screenPointer += 4;
+			}
+		}
 	}
 }
 

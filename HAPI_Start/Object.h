@@ -11,8 +11,9 @@ protected:
 	std::shared_ptr<Vector3> m_position;
 	HAPI_TColour m_hue{ HAPI_TColour::RED };
 	std::string m_sprite{ "Data\\playerSprite.tga" };
+	bool m_hasTransparency{ false };
 public:
-	Object(HAPI_TColour c, int x = 0, int y = 0, int z = 0);
+	Object(HAPI_TColour c, int x = 0, int y = 0, int z = 0, bool t = false);
 	virtual void Render(BYTE*& s, float d = 1.0f, float h = 768.0f, float w = 1024.0f);
 	void SetPosition(Vector3& v);
 	std::shared_ptr<Vector3>& GetPosition();

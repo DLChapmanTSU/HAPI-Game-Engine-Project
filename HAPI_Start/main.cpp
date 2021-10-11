@@ -69,7 +69,7 @@ void HAPI_Main()
 		stars.push_back(std::make_shared<Star>(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256), std::rand() % width, std::rand() % height, 500 - (std::rand() % 100)));
 	}
 
-	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0);
+	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, true);
 
 	while (HAPI.Update()) {
 
