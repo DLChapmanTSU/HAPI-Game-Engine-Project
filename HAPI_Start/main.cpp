@@ -37,7 +37,6 @@ void HAPI_Main()
 {
 	int width{1024};
 	int height{768};
-	//int pixelTarget{ 0 };
 	float eyeDistance{ 500.0f };
 	
 
@@ -48,17 +47,6 @@ void HAPI_Main()
 
 	std::shared_ptr<Object> star = std::make_shared<Object>(200, 200, 500);
 
-	//for (size_t i = 0; i < 786432; i++)
-	//{
-	//	if (i % 5 == 0) {
-	//		int offset = i * 4;
-	//		screen[offset] = 255;
-	//		screen[offset + 1] = 0;
-	//		screen[offset + 2] = 255;
-	//	}
-	//	
-	//}
-
 	HAPI.SetShowFPS(true);
 
 	std::vector<std::shared_ptr<Object>> stars;
@@ -66,10 +54,11 @@ void HAPI_Main()
 
 	for (size_t i = 0; i < 10000; i++)
 	{
-		stars.push_back(std::make_shared<Star>(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256), std::rand() % width, std::rand() % height, 500 - (std::rand() % 100)));
+		stars.push_back(std::make_shared<Star>(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256), std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500 - (std::rand() % 400)));
 	}
 
-	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, true);
+	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, true, "Data\\playerSprite.tga");
+	std::shared_ptr<Object> background = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, false);
 
 	while (HAPI.Update()) {
 
@@ -77,7 +66,7 @@ void HAPI_Main()
 
 		for (std::shared_ptr<Object> s : stars) {
 			if (s->GetPosition()->GetZ() <= 0) {
-				s->SetPosition(Vector3(std::rand() % width, std::rand() % height, 500 - (std::rand() % 100)));
+				s->SetPosition(Vector3(std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500));
 				s->SetHue(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256));
 			}
 			else {
@@ -87,6 +76,7 @@ void HAPI_Main()
 			s->Render(screen, eyeDistance, height, width);
 		}
 
+		background->Render(screen, eyeDistance, height, width);
 		player->Render(screen, eyeDistance, height, width);
 
 		const HAPI_TKeyboardData& keyData = HAPI.GetKeyboardData();
@@ -101,13 +91,6 @@ void HAPI_Main()
 		if (!HAPI.RenderText(0, 12, HAPI_TColour::WHITE, "Eye Distance: " + std::to_string((int)eyeDistance))) {
 			//ERROR
 		}
-
-		//star->Render(screen, 100.0f);
-		
-		
-		
-		//HorizontalLine(255, 500, 200, width, height);
-		//VerticalLine(35, 35, 50, width, height);
 	}
 
 	
