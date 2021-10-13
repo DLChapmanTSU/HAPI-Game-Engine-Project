@@ -13,6 +13,7 @@ public:
 	float GetX();
 	float GetY();
 	float GetZ();
+	void Normalize();
 
 	friend Vector3 operator+(Vector3& v1, Vector3& v2);
 };

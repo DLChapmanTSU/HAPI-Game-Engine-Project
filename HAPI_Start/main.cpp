@@ -59,8 +59,8 @@ void HAPI_Main()
 		stars.push_back(std::make_shared<Star>(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256), std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500 - (std::rand() % 400)));
 	}
 
-	//std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 300, 300, 0, true, "Data\\playerSprite.tga");
-	//std::shared_ptr<Object> background = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, false);
+	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 301, 301, 0, true, "Data\\playerSprite.tga");
+	std::shared_ptr<Object> background = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, false);
 
 	while (HAPI.Update()) {
 		//Clears screen to black
@@ -81,8 +81,8 @@ void HAPI_Main()
 			s->Render(screen, eyeDistance, height, width);
 		}
 
-		//background->Render(screen, eyeDistance, height, width);
-		//player->Render(screen, eyeDistance, height, width);
+		background->Render(screen, eyeDistance, height, width);
+		player->Render(screen, eyeDistance, height, width);
 
 		//Checks user keyboard inputs
 		//If S is pressed, the eye distance is increased, drawing the eye away
@@ -95,6 +95,34 @@ void HAPI_Main()
 		else if (keyData.scanCode['W'] && eyeDistance > 1.0f) {
 			eyeDistance--;
 		}
+
+		const HAPI_TControllerData& conData = HAPI.GetControllerData(0);
+
+		Vector3 playerMove(0.0f, 0.0f, 0.0f);
+
+		if (conData.isAttached) {
+			//Controller Inputs
+		}
+		else {
+			if (keyData.scanCode[HK_UP]) {
+				playerMove = playerMove + Vector3(0.0f, -5.0f, 0.0f);
+			}
+
+			if (keyData.scanCode[HK_DOWN]) {
+				playerMove = playerMove + Vector3(0.0f, 5.0f, 0.0f);
+			}
+
+			if (keyData.scanCode[HK_RIGHT]) {
+				playerMove = playerMove + Vector3(5.0f, 0.0f, 0.0f);
+			}
+
+			if (keyData.scanCode[HK_LEFT]) {
+				playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
+			}
+		}
+
+		playerMove.Normalize();
+		player->Transform(playerMove);
 		
 		//Displays the eye distance to the top left of the screen
 		if (!HAPI.RenderText(0, 12, HAPI_TColour::WHITE, "Eye Distance: " + std::to_string((int)eyeDistance))) {
