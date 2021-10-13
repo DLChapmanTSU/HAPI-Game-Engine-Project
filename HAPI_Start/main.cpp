@@ -35,6 +35,7 @@ void VerticalLine(int x, int y, int l, int w, int h);
 // When this function exits the program will close down
 void HAPI_Main()
 {
+	//Initialize screen dimensions and eyes distance from the screen
 	int width{1024};
 	int height{768};
 	float eyeDistance{ 500.0f };
@@ -52,18 +53,22 @@ void HAPI_Main()
 	std::vector<std::shared_ptr<Object>> stars;
 	std::srand(time(NULL));
 
+	//Creates 10000 stars in random positions
 	for (size_t i = 0; i < 10000; i++)
 	{
 		stars.push_back(std::make_shared<Star>(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256), std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500 - (std::rand() % 400)));
 	}
 
-	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, true, "Data\\playerSprite.tga");
-	std::shared_ptr<Object> background = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, false);
+	//std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 300, 300, 0, true, "Data\\playerSprite.tga");
+	//std::shared_ptr<Object> background = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, false);
 
 	while (HAPI.Update()) {
-
+		//Clears screen to black
 		memset(screen, 0, (size_t)width * (size_t)height * 4);
 
+		//Updates the position of each star and then renders them
+		//If the z position reaches 0, their position is randomized on the x and y axis and set to 500 on the z axis
+		//Colour is also randomized
 		for (std::shared_ptr<Object> s : stars) {
 			if (s->GetPosition()->GetZ() <= 0) {
 				s->SetPosition(Vector3(std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500));
@@ -76,9 +81,12 @@ void HAPI_Main()
 			s->Render(screen, eyeDistance, height, width);
 		}
 
-		background->Render(screen, eyeDistance, height, width);
-		player->Render(screen, eyeDistance, height, width);
+		//background->Render(screen, eyeDistance, height, width);
+		//player->Render(screen, eyeDistance, height, width);
 
+		//Checks user keyboard inputs
+		//If S is pressed, the eye distance is increased, drawing the eye away
+		//If W is pressed, the eye distance is decreased, bringing the eye closer to the screen
 		const HAPI_TKeyboardData& keyData = HAPI.GetKeyboardData();
 
 		if (keyData.scanCode['S'] && eyeDistance < 2000.0f) {
@@ -88,6 +96,7 @@ void HAPI_Main()
 			eyeDistance--;
 		}
 		
+		//Displays the eye distance to the top left of the screen
 		if (!HAPI.RenderText(0, 12, HAPI_TColour::WHITE, "Eye Distance: " + std::to_string((int)eyeDistance))) {
 			//ERROR
 		}
