@@ -31,11 +31,29 @@ void Object::Render(BYTE*& s, float d, float h, float w)
 	BYTE* screenPointer = s + screenPositionToPointTo;
 	BYTE* texturePointer = texture;
 
+	int upperRowsToIgnore{ 0 };
+	int lowerRowsToIgnore{ 0 };
+
+	if (screenPositionToPointTo < 0) {
+		upperRowsToIgnore = m_position->GetY();
+		upperRowsToIgnore = -(upperRowsToIgnore);
+	}
+
+	if (screenPositionToPointTo > ((w * h - (textureHeight * w)) * 4)) {
+		lowerRowsToIgnore = textureHeight - (h - m_position->GetY());
+
+		if (lowerRowsToIgnore > 64) {
+			return;
+		}
+	}
+
 	//Uses memcpy to blit line by line if there is no transparency and blits pixel by pixel if there is
 	if (m_hasTransparency == false) {
-		for (size_t i = 0; i < textureHeight; i++)
+		for (size_t i = 0; i < (size_t)textureHeight - (size_t)lowerRowsToIgnore; i++)
 		{
-			std::memcpy(screenPointer, texturePointer, (size_t)textureWidth * 4);
+			if (i >= upperRowsToIgnore) {
+				std::memcpy(screenPointer, texturePointer, (size_t)textureWidth * 4);
+			}
 
 			texturePointer += (size_t)textureWidth * 4;
 
@@ -46,39 +64,41 @@ void Object::Render(BYTE*& s, float d, float h, float w)
 		//Calculates an offset to add to the pointer when the end of a row is reached
 		int lineEndIncrement = (int)(w - textureWidth) * 4.0f;
 
-		for (size_t y = 0; y < textureHeight; y++)
+		for (size_t y = 0; y < (size_t)textureHeight - (size_t)lowerRowsToIgnore; y++)
 		{
-			for (size_t x = 0; x < textureHeight; x++)
+			for (size_t x = 0; x < (size_t)textureHeight; x++)
 			{
-				//Fetches the alpha of the current pixel
-				BYTE alpha = texturePointer[3];
+				if (y >= upperRowsToIgnore) {
+					//Fetches the alpha of the current pixel
+					BYTE alpha = texturePointer[3];
 
-				//If the alpha is 0, nothing is rendered and the pointers move to the next pixel
-				if (alpha == 0) {
-					texturePointer += 4;
-					screenPointer += 4;
-					continue;
-				}
+					//If the alpha is 0, nothing is rendered and the pointers move to the next pixel
+					if (alpha == 0) {
+						texturePointer += 4;
+						screenPointer += 4;
+						continue;
+					}
 
-				//Fetches the rgb values
-				BYTE red = texturePointer[0];
-				BYTE green = texturePointer[1];
-				BYTE blue = texturePointer[2];
-				
-				//Directly copies the rgb values if the pixel is fully opaque
-				if (alpha == 255.0f) {
-					screenPointer[0] = red;
-					screenPointer[1] = green;
-					screenPointer[2] = blue;
-				}
-				else {
-					//Otherwise, a midpoint is found between the rgb of the background pixel and the sprite pixel
-					//This midpoint is then rendered on the screen
-					float mod = alpha / 255.0f;
+					//Fetches the rgb values
+					BYTE red = texturePointer[0];
+					BYTE green = texturePointer[1];
+					BYTE blue = texturePointer[2];
 
-					screenPointer[0] = (BYTE)(mod * red + (1.0f - mod) * screenPointer[0]);
-					screenPointer[1] = (BYTE)(mod * green + (1.0f - mod) * screenPointer[1]);
-					screenPointer[2] = (BYTE)(mod * blue + (1.0f - mod) * screenPointer[2]);
+					//Directly copies the rgb values if the pixel is fully opaque
+					if (alpha == 255.0f) {
+						screenPointer[0] = red;
+						screenPointer[1] = green;
+						screenPointer[2] = blue;
+					}
+					else {
+						//Otherwise, a midpoint is found between the rgb of the background pixel and the sprite pixel
+						//This midpoint is then rendered on the screen
+						float mod = alpha / 255.0f;
+
+						screenPointer[0] = (BYTE)(mod * red + (1.0f - mod) * screenPointer[0]);
+						screenPointer[1] = (BYTE)(mod * green + (1.0f - mod) * screenPointer[1]);
+						screenPointer[2] = (BYTE)(mod * blue + (1.0f - mod) * screenPointer[2]);
+					}
 				}
 
 				texturePointer += 4;
