@@ -10,15 +10,18 @@ class Object {
 protected:
 	std::shared_ptr<Vector3> m_position;
 	HAPI_TColour m_hue{ HAPI_TColour::RED };
-	std::string m_sprite;
+	BYTE* m_texture;
+	int m_textureWidth;
+	int m_textureHeight;
 	bool m_hasTransparency{ false };
 public:
-	Object(HAPI_TColour c, int x = 0, int y = 0, int z = 0, bool t = false, std::string s = "Data\\background.tga");
+	Object(HAPI_TColour c, int x = 0, int y = 0, int z = 0, bool t = false, std::string s = "Data\\background.tga", int w = 64, int h = 64);
 	virtual void Render(BYTE*& s, float d = 1.0f, float h = 768.0f, float w = 1024.0f);
 	void SetPosition(Vector3& v);
 	std::shared_ptr<Vector3>& GetPosition();
 	void Transform(Vector3& v);
 	void SetHue(HAPI_TColour& c);
+	void ClearPointers();
 };
 
 class Star : public Object {

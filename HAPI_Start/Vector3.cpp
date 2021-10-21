@@ -45,17 +45,13 @@ void Vector3::Normalize()
 
 	float length = std::sqrt(squaredLength);
 
-	if (m_x != 0) {
+	if (length != 0) {
 		m_x /= length;
 		m_x = std::roundf(m_x);
-	}
 
-	if (m_y != 0) {
 		m_y /= length;
 		m_y = std::roundf(m_y);
-	}
 
-	if (m_z != 0) {
 		m_z /= length;
 		m_z = std::roundf(m_z);
 	}

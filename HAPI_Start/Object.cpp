@@ -5,31 +5,28 @@
 
 using namespace HAPISPACE;
 
-Object::Object(HAPI_TColour c, int x, int y, int z, bool t, std::string s)
+Object::Object(HAPI_TColour c, int x, int y, int z, bool t, std::string s, int w, int h)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
 	m_hue = c;
 	m_hasTransparency = t;
-	m_sprite = s;
+	m_textureWidth = w;
+	m_textureHeight = h;
+	if (!HAPI.LoadTexture(s, &m_texture, w, h)) {
+		//No load
+		HAPI.UserMessage("Texture Failed To Load", "ERROR");
+		HAPI.Close();
+	}
 }
 
 void Object::Render(BYTE*& s, float d, float h, float w)
 {
 	//Generic Sprite Rendering Here
-	BYTE* texture{ nullptr };
-	int textureWidth{ 64 };
-	int textureHeight{ 64 };
-
-	if (!HAPI.LoadTexture(m_sprite, &texture, textureWidth, textureHeight)) {
-		//No load
-		HAPI.UserMessage("Texture Failed To Load", "ERROR");
-		HAPI.Close();
-	}
 
 	//Creates pointers to the texture and the first pixel in the screen to render to
 	int screenPositionToPointTo = (int)((m_position->GetX() + m_position->GetY() * w) * 4.0f);
 	BYTE* screenPointer = s + screenPositionToPointTo;
-	BYTE* texturePointer = texture;
+	BYTE* texturePointer = m_texture;
 
 	int upperRowsToIgnore{ 0 };
 	int lowerRowsToIgnore{ 0 };
@@ -39,36 +36,56 @@ void Object::Render(BYTE*& s, float d, float h, float w)
 		upperRowsToIgnore = -(upperRowsToIgnore);
 	}
 
-	if (screenPositionToPointTo > ((w * h - (textureHeight * w)) * 4)) {
-		lowerRowsToIgnore = textureHeight - (h - m_position->GetY());
+	if (screenPositionToPointTo > ((w * h - (m_textureHeight * w)) * 4)) {
+		lowerRowsToIgnore = m_textureHeight - (h - m_position->GetY());
 
-		if (lowerRowsToIgnore > 64) {
+		if (lowerRowsToIgnore > m_textureHeight) {
 			return;
 		}
 	}
 
+	float px = m_position->GetX();
+	int startColumnsToIgnore{ 0 };
+	int endColumnsToIgnore{ 0 };
+
+	if (px < 0.0f) {
+		if (-px >= m_textureWidth) {
+			return;
+		}
+
+		startColumnsToIgnore = -(int)px;
+	}
+
+	if (px > w - m_textureWidth) {
+		if (px >= w) {
+			return;
+		}
+
+		endColumnsToIgnore = (px + m_textureWidth) - w;
+	}
+
 	//Uses memcpy to blit line by line if there is no transparency and blits pixel by pixel if there is
 	if (m_hasTransparency == false) {
-		for (size_t i = 0; i < (size_t)textureHeight - (size_t)lowerRowsToIgnore; i++)
+		for (size_t i = 0; i < (size_t)m_textureHeight - (size_t)lowerRowsToIgnore; i++)
 		{
 			if (i >= upperRowsToIgnore) {
-				std::memcpy(screenPointer, texturePointer, (size_t)textureWidth * 4);
+				std::memcpy(screenPointer, texturePointer, (size_t)m_textureWidth * 4);
 			}
 
-			texturePointer += (size_t)textureWidth * 4;
+			texturePointer += (size_t)m_textureWidth * 4;
 
 			screenPointer += (size_t)w * 4;
 		}
 	}
 	else {
 		//Calculates an offset to add to the pointer when the end of a row is reached
-		int lineEndIncrement = (int)(w - textureWidth) * 4.0f;
+		int lineEndIncrement = (int)(w - m_textureWidth) * 4.0f;
 
-		for (size_t y = 0; y < (size_t)textureHeight - (size_t)lowerRowsToIgnore; y++)
+		for (size_t y = 0; y < (size_t)m_textureHeight - (size_t)lowerRowsToIgnore; y++)
 		{
-			for (size_t x = 0; x < (size_t)textureHeight; x++)
+			for (size_t x = 0; x < (size_t)m_textureHeight; x++)
 			{
-				if (y >= upperRowsToIgnore) {
+				if (y >= upperRowsToIgnore && x >= startColumnsToIgnore && x < m_textureWidth - endColumnsToIgnore) {
 					//Fetches the alpha of the current pixel
 					BYTE alpha = texturePointer[3];
 
@@ -108,6 +125,8 @@ void Object::Render(BYTE*& s, float d, float h, float w)
 			screenPointer += lineEndIncrement;
 		}
 	}
+
+	//delete[] texture;
 }
 
 void Object::SetPosition(Vector3& v)
@@ -130,6 +149,11 @@ void Object::Transform(Vector3& v)
 void Object::SetHue(HAPI_TColour& c)
 {
 	m_hue = c;
+}
+
+void Object::ClearPointers()
+{
+	delete[] m_texture;
 }
 
 void Star::Render(BYTE*& s, float d, float h, float w)
