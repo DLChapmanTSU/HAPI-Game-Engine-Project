@@ -41,18 +41,21 @@ float Vector3::GetZ()
 
 void Vector3::Normalize()
 {
-	float squaredLength = (m_x * m_x) + (m_y * m_y) + (m_z + m_z);
+	float xSquared = std::pow(m_x, 2.0f);
+	float ySquared = std::pow(m_y, 2.0f);
+	float zSquared = std::pow(m_z, 2.0f);
+	float squaredLength = xSquared + ySquared + zSquared;
 
 	float length = std::sqrt(squaredLength);
 
 	if (length != 0) {
 		m_x /= length;
-		m_x = std::roundf(m_x);
+		//m_x = std::roundf(m_x);
 
 		m_y /= length;
-		m_y = std::roundf(m_y);
+		//m_y = std::roundf(m_y);
 
 		m_z /= length;
-		m_z = std::roundf(m_z);
+		//m_z = std::roundf(m_z);
 	}
 }

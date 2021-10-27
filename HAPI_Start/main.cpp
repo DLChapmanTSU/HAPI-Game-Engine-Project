@@ -17,6 +17,7 @@
 
 #include "Object.h"
 #include "Vector3.h"
+#include "Visualisation.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -30,7 +31,6 @@ using namespace HAPISPACE;
 
 void HorizontalLine(int x, int y, int l, int w, int h);
 void VerticalLine(int x, int y, int l, int w, int h);
-void ClearToColour(HAPI_TColour& c, int w, int h);
 
 // Every HAPI program has a HAPI_Main as an entry point
 // When this function exits the program will close down
@@ -47,47 +47,41 @@ void HAPI_Main()
 
 	BYTE* screen = HAPI.GetScreenPointer();
 
+	Visualisation vis(width, height);
+	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true);
+	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false);
+	vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
+
 	std::shared_ptr<Object> star = std::make_shared<Object>(200, 200, 500);
 
 	HAPI.SetShowFPS(true);
 
-	//std::vector<std::shared_ptr<Object>> stars;
-	//std::srand(time(NULL));
-
-	////Creates 10000 stars in random positions
-	//for (size_t i = 0; i < 10000; i++)
-	//{
-	//	stars.emplace_back(std::make_shared<Star>(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256), std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500 - (std::rand() % 400)));
-	//}
-
-	std::shared_ptr<Object> player = std::make_shared<Object>(HAPI_TColour::WHITE, 301, 301, 0, true, "Data\\playerSprite.tga");
-	std::shared_ptr<Object> background = std::make_shared<Object>(HAPI_TColour::WHITE, 10, 10, 0, false, "Data\\background.tga", 256, 256);
-	std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(HAPI_TColour::WHITE, 500, 500, 0, true, "Data\\alphaThing.tga");
+	std::shared_ptr<Object> player = std::make_shared<Object>(301, 301, 0);
+	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0);
+	std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
 
 	while (HAPI.Update()) {
 		//Clears screen to given colour
 		HAPI_TColour bgColour(10, 56, 33, 255);
-		ClearToColour(bgColour, 1024, 768);
+		vis.ClearToColour(bgColour, 1024, 768);
 
-		//Updates the position of each star and then renders them
-		//If the z position reaches 0, their position is randomized on the x and y axis and set to 500 on the z axis
-		//Colour is also randomized
-		/*for (std::shared_ptr<Object> &s : stars) {
-			if (s->GetPosition()->GetZ() <= 0) {
-				s->SetPosition(Vector3(std::rand() % (width + 400) - 200, std::rand() % (height + 400) - 200, 500));
-				s->SetHue(HAPI_TColour(std::rand() % 256, std::rand() % 256, std::rand() % 256, std::rand() % 256));
-			}
-			else {
-				s->Transform(Vector3(0.0f, 0.0f, -1.0f));
-			}
-
-			s->Render(screen, eyeDistance, height, width);
-		}*/
-
-		background->Render(screen, eyeDistance, height, width);
+		//Renders each object, taking in the key for the texture
+		//Ends the program if an invalid key is passed in
+		//Will return false if this is the case
+		if (!vis.RenderTexture(background->GetPosition(), "Background")) {
+			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
+			HAPI.Close();
+		}
 		
-		transparencyCheck->Render(screen, eyeDistance, height, width);
-		player->Render(screen, eyeDistance, height, width);
+		if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
+			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
+			HAPI.Close();
+		}
+
+		if (!vis.RenderTexture(player->GetPosition(), "Player")) {
+			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
+			HAPI.Close();
+		}
 
 		//Checks user keyboard inputs
 		//If S is pressed, the eye distance is increased, drawing the eye away
@@ -105,6 +99,9 @@ void HAPI_Main()
 
 		Vector3 playerMove(0.0f, 0.0f, 0.0f);
 
+		//Checks to see if the controller is plugged in
+		//If it is, movement is calculated using the left thumb stick
+		//Otherwise, movement is done using the arrow keys
 		if (conData.isAttached) {
 			//Controller Inputs
 			if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] > 10000 || conData.digitalButtons[HK_DIGITAL_DPAD_UP] == true) {
@@ -122,6 +119,7 @@ void HAPI_Main()
 			}
 		}
 		else {
+			//Arrow Key Inputs
 			if (keyData.scanCode[HK_UP]) {
 				playerMove = playerMove + Vector3(0.0f, -5.0f, 0.0f);
 			}
@@ -139,8 +137,9 @@ void HAPI_Main()
 			}
 		}
 
+		//Normalizes the vector before applying the translation
 		playerMove.Normalize();
-		player->Transform(playerMove);
+		player->Translate(playerMove);
 		
 		//Displays the eye distance to the top left of the screen
 		if (!HAPI.RenderText(0, 12, HAPI_TColour::WHITE, "Eye Distance: " + std::to_string((int)eyeDistance))) {
@@ -148,9 +147,10 @@ void HAPI_Main()
 		}
 	}
 
-	player->ClearPointers();
-	background->ClearPointers();
-	transparencyCheck->ClearPointers();
+	//Clears pointers to textures
+	//player->ClearPointers();
+	//background->ClearPointers();
+	//transparencyCheck->ClearPointers();
 
 	//delete[] screen;
 }
@@ -174,23 +174,5 @@ void VerticalLine(int x, int y, int l, int w, int h) {
 	for (size_t i = startOffset; i < endOffset; i += w)
 	{
 		screen[i * 4] = 255;
-	}
-}
-
-void ClearToColour(HAPI_TColour& c, int w, int h)
-{
-	BYTE* screen = HAPI.GetScreenPointer();
-
-	if (c.red == c.green && c.red == c.blue) {
-		memset(screen, c.red, (size_t)w * (size_t)h * 4);
-	}
-	else {
-		for (int i = 0; i < w * h; i++)
-		{
-			int offset{ i * 4 };
-			screen[offset] = c.red;
-			screen[offset + 1] = c.green;
-			screen[offset + 2] = c.blue;
-		}
 	}
 }

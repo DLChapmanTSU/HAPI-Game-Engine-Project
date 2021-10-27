@@ -2,11 +2,11 @@
 
 class Vector3 {
 private:
-	float m_x = 0;
-	float m_y = 0;
-	float m_z = 0;
+	float m_x = 0.0f;
+	float m_y = 0.0f;
+	float m_z = 0.0f;
 public:
-	Vector3(float x = 0, float y = 0, float z = 0);
+	Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 	void SetX(float x);
 	void SetY(float y);
 	void SetZ(float z);
