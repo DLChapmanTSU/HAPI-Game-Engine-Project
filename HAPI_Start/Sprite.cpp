@@ -14,3 +14,8 @@ Sprite::Sprite(std::string s, int w, int h, bool t)
 		HAPI.Close();
 	}
 }
+
+Sprite::~Sprite()
+{
+	delete[] m_texture;
+}

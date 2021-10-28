@@ -11,8 +11,8 @@ Visualisation::Visualisation(int w, int h)
 
 void Visualisation::GenerateSprite(std::string d, std::string i, int w, int h, bool t)
 {
-	Sprite temp(d, w, h, t);
-	m_sprites[i] = std::make_shared<Sprite>(temp);
+	//Sprite temp(d, w, h, t);
+	m_sprites[i] = std::make_shared<Sprite>(d, w, h, t);
 }
 
 void Visualisation::ClearToColour(HAPI_TColour& c, int w, int h)
@@ -50,12 +50,12 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	int lowerRowsToIgnore{ 0 };
 
 	if (screenPositionToPointTo < 0) {
-		upperRowsToIgnore = std::roundf(p->GetY());
+		upperRowsToIgnore = (int)std::roundf(p->GetY());
 		upperRowsToIgnore = -(upperRowsToIgnore);
 	}
 
 	if (screenPositionToPointTo > ((m_screenWidth * m_screenHeight - (m_sprites[n]->GetTextureHeight() * m_screenWidth)) * 4)) {
-		lowerRowsToIgnore = m_sprites[n]->GetTextureHeight() - (m_screenHeight - std::roundf(p->GetY()));
+		lowerRowsToIgnore = m_sprites[n]->GetTextureHeight() - (m_screenHeight - (int)std::roundf(p->GetY()));
 
 		if (lowerRowsToIgnore > m_sprites[n]->GetTextureHeight()) {
 			return true;
@@ -79,12 +79,20 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 			return true;
 		}
 
-		endColumnsToIgnore = (px + m_sprites[n]->GetTextureWidth()) - m_screenWidth;
+		endColumnsToIgnore = (int)(px + m_sprites[n]->GetTextureWidth()) - m_screenWidth;
 	}
+
+	/*if (upperRowsToIgnore > 0) {
+		texturePointer += (size_t)m_sprites[n]->GetTextureWidth() * 4 * upperRowsToIgnore;
+		screenPointer += (size_t)m_screenWidth * 4 * upperRowsToIgnore;
+	}
+
+	texturePointer += (BYTE)startColumnsToIgnore * 4;
+	screenPointer += (BYTE)startColumnsToIgnore * 4;*/
 
 	//Uses memcpy to blit line by line if there is no transparency and blits pixel by pixel if there is
 	if (m_sprites[n]->GetHasTransparency() == false) {
-		for (size_t i = 0; i < (size_t)m_sprites[n]->GetTextureHeight() - (size_t)lowerRowsToIgnore; i++)
+		for (int i = upperRowsToIgnore; i < m_sprites[n]->GetTextureHeight() - lowerRowsToIgnore; i++)
 		{
 			if (i >= upperRowsToIgnore) {
 				std::memcpy(screenPointer, texturePointer, (size_t)m_sprites[n]->GetTextureWidth() * 4);
@@ -97,11 +105,12 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	}
 	else {
 		//Calculates an offset to add to the pointer when the end of a row is reached
-		int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4.0f;
+		int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4;
+		//int textureEndIncrement = startColumnsToIgnore * 4;
 
-		for (size_t y = 0; y < (size_t)m_sprites[n]->GetTextureHeight() - (size_t)lowerRowsToIgnore; y++)
+		for (int y = 0; y < m_sprites[n]->GetTextureHeight() - (size_t)lowerRowsToIgnore; y++)
 		{
-			for (size_t x = 0; x < (size_t)m_sprites[n]->GetTextureHeight(); x++)
+			for (int x = 0; x < m_sprites[n]->GetTextureHeight() - endColumnsToIgnore; x++)
 			{
 				if (y >= upperRowsToIgnore && x >= startColumnsToIgnore && x < m_sprites[n]->GetTextureWidth() - endColumnsToIgnore) {
 					//Fetches the alpha of the current pixel
@@ -136,11 +145,43 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 					}
 				}
 
+				////Fetches the alpha of the current pixel
+				//	BYTE alpha = texturePointer[3];
+
+				//	//If the alpha is 0, nothing is rendered and the pointers move to the next pixel
+				//	if (alpha == 0) {
+				//		texturePointer += 4;
+				//		screenPointer += 4;
+				//		continue;
+				//	}
+
+				//	//Fetches the rgb values
+				//	BYTE red = texturePointer[0];
+				//	BYTE green = texturePointer[1];
+				//	BYTE blue = texturePointer[2];
+
+				//	//Directly copies the rgb values if the pixel is fully opaque
+				//	if (alpha == 255.0f) {
+				//		screenPointer[0] = red;
+				//		screenPointer[1] = green;
+				//		screenPointer[2] = blue;
+				//	}
+				//	else {
+				//		//Otherwise, a midpoint is found between the rgb of the background pixel and the sprite pixel
+				//		//This midpoint is then rendered on the screen
+				//		float mod = alpha / 255.0f;
+
+				//		screenPointer[0] = (BYTE)(mod * red + (1.0f - mod) * screenPointer[0]);
+				//		screenPointer[1] = (BYTE)(mod * green + (1.0f - mod) * screenPointer[1]);
+				//		screenPointer[2] = (BYTE)(mod * blue + (1.0f - mod) * screenPointer[2]);
+				//	}
+
 				texturePointer += 4;
 				screenPointer += 4;
 			}
 
 			screenPointer += lineEndIncrement;
+			//texturePointer += textureEndIncrement;
 		}
 	}
 	

@@ -10,9 +10,9 @@ public:
 	void SetX(float x);
 	void SetY(float y);
 	void SetZ(float z);
-	float GetX();
-	float GetY();
-	float GetZ();
+	float GetX() const;
+	float GetY() const;
+	float GetZ() const;
 	void Normalize();
 
 	friend Vector3 operator+(Vector3& v1, Vector3& v2);

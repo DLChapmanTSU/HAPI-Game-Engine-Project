@@ -24,17 +24,17 @@ void Vector3::SetZ(float z)
 	m_z = z;
 }
 
-float Vector3::GetX()
+float Vector3::GetX() const
 {
 	return m_x;
 }
 
-float Vector3::GetY()
+float Vector3::GetY() const
 {
 	return m_y;
 }
 
-float Vector3::GetZ()
+float Vector3::GetZ() const
 {
 	return m_z;
 }

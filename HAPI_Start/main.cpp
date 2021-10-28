@@ -57,7 +57,7 @@ void HAPI_Main()
 	HAPI.SetShowFPS(true);
 
 	std::shared_ptr<Object> player = std::make_shared<Object>(301, 301, 0);
-	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0);
+	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0, 256, 256);
 	std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
 
 	while (HAPI.Update()) {
@@ -72,13 +72,13 @@ void HAPI_Main()
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
-		
-		if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
+
+		if (!vis.RenderTexture(player->GetPosition(), "Player")) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
-
-		if (!vis.RenderTexture(player->GetPosition(), "Player")) {
+		
+		if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
@@ -139,7 +139,19 @@ void HAPI_Main()
 
 		//Normalizes the vector before applying the translation
 		playerMove.Normalize();
+
+		//Stops the player from moving if they would move off the edge of the screen
+		//Vector3 newPosition = playerMove + *player->GetPosition();
+		//if (newPosition.GetX() < 0 || newPosition.GetX() + player->GetDimensions().first >= width || newPosition.GetY() + player->GetDimensions().second >= height || newPosition.GetY() < 0) {
+		//	//Player leaving screen
+		//}
+		//else {
+		//	player->Translate(playerMove);
+		//}
+
 		player->Translate(playerMove);
+
+		
 		
 		//Displays the eye distance to the top left of the screen
 		if (!HAPI.RenderText(0, 12, HAPI_TColour::WHITE, "Eye Distance: " + std::to_string((int)eyeDistance))) {

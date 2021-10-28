@@ -5,9 +5,11 @@
 
 using namespace HAPISPACE;
 
-Object::Object(int x, int y, int z)
+Object::Object(int x, int y, int z, int sx, int sy)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
+	m_sizeX = sx;
+	m_sizeY = sy;
 	//m_hue = c;
 	//m_hasTransparency = t;
 	//m_textureWidth = w;
@@ -142,6 +144,11 @@ void Object::Translate(Vector3& v)
 	Vector3 temp = *m_position;
 	temp = temp + v;
 	m_position = std::make_shared<Vector3>(temp);
+}
+
+std::pair<int, int> Object::GetDimensions() const
+{
+	return std::pair<int, int>(m_sizeX, m_sizeY);
 }
 
 //void Object::SetHue(HAPI_TColour& c)
