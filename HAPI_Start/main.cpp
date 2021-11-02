@@ -141,15 +141,15 @@ void HAPI_Main()
 		playerMove.Normalize();
 
 		//Stops the player from moving if they would move off the edge of the screen
-		//Vector3 newPosition = playerMove + *player->GetPosition();
-		//if (newPosition.GetX() < 0 || newPosition.GetX() + player->GetDimensions().first >= width || newPosition.GetY() + player->GetDimensions().second >= height || newPosition.GetY() < 0) {
-		//	//Player leaving screen
-		//}
-		//else {
-		//	player->Translate(playerMove);
-		//}
+		Vector3 newPosition = playerMove + *player->GetPosition();
+		if (newPosition.GetX() < 0 || newPosition.GetX() + player->GetDimensions().first >= width || newPosition.GetY() + player->GetDimensions().second >= height || newPosition.GetY() < 0) {
+			//Player leaving screen
+		}
+		else {
+			player->Translate(playerMove);
+		}
 
-		player->Translate(playerMove);
+		//player->Translate(playerMove);
 
 		
 		
