@@ -49,16 +49,16 @@ void HAPI_Main()
 
 	Visualisation vis(width, height);
 	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true);
-	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false);
-	vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
+	//vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false);
+	//vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
 
 	std::shared_ptr<Object> star = std::make_shared<Object>(200, 200, 500);
 
 	HAPI.SetShowFPS(true);
 
 	std::shared_ptr<Object> player = std::make_shared<Object>(301, 301, 0);
-	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0, 256, 256);
-	std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
+	//std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0, 256, 256);
+	//std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
 
 	while (HAPI.Update()) {
 		//Clears screen to given colour
@@ -68,20 +68,20 @@ void HAPI_Main()
 		//Renders each object, taking in the key for the texture
 		//Ends the program if an invalid key is passed in
 		//Will return false if this is the case
-		if (!vis.RenderTexture(background->GetPosition(), "Background")) {
+		/*if (!vis.RenderTexture(background->GetPosition(), "Background")) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
-		}
+		}*/
 
 		if (!vis.RenderTexture(player->GetPosition(), "Player")) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
 		
-		if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
+		/*if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
-		}
+		}*/
 
 		//Checks user keyboard inputs
 		//If S is pressed, the eye distance is increased, drawing the eye away
@@ -141,15 +141,15 @@ void HAPI_Main()
 		playerMove.Normalize();
 
 		//Stops the player from moving if they would move off the edge of the screen
-		Vector3 newPosition = playerMove + *player->GetPosition();
-		if (newPosition.GetX() < 0 || newPosition.GetX() + player->GetDimensions().first >= width || newPosition.GetY() + player->GetDimensions().second >= height || newPosition.GetY() < 0) {
-			//Player leaving screen
-		}
-		else {
-			player->Translate(playerMove);
-		}
+		//Vector3 newPosition = playerMove + *player->GetPosition();
+		//if (newPosition.GetX() < 0 || newPosition.GetX() + player->GetDimensions().first >= width || newPosition.GetY() + player->GetDimensions().second >= height || newPosition.GetY() < 0) {
+		//	//Player leaving screen
+		//}
+		//else {
+		//	player->Translate(playerMove);
+		//}
 
-		//player->Translate(playerMove);
+		player->Translate(playerMove);
 
 		
 		
