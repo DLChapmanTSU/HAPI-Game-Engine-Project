@@ -69,7 +69,7 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 
 	//float px = std::roundf(p->GetX());
 	int startColumnsToIgnore{ clippedRect.m_left - textureRect.m_left };
-	int endColumnsToIgnore{ m_sprites[n]->GetTextureWidth() - (clippedRect.m_right - textureRect.m_right) };
+	int endColumnsToIgnore{ m_sprites[n]->GetTextureWidth() - (textureRect.m_right - clippedRect.m_right) };
 
 	/*if (px < 0.0f) {
 		if (-px >= m_sprites[n]->GetTextureWidth()) {
@@ -105,8 +105,11 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	}
 	else {
 		//Calculates an offset to add to the pointer when the end of a row is reached
-		int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4;
-		screenPointer += (size_t)lineEndIncrement * upperRowsToIgnore + ((size_t)startColumnsToIgnore * 4);
+		//int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4;
+		int lineEndIncrement = (int)(m_screenWidth - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
+		int textureEndIncrement = (int)(m_sprites[n]->GetTextureWidth() - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
+		screenPointer += (size_t)m_screenWidth * upperRowsToIgnore * 4;
+		//screenPointer += (size_t)startColumnsToIgnore * 4;
 		texturePointer += (((size_t)m_sprites[n]->GetTextureHeight() * upperRowsToIgnore) + startColumnsToIgnore) * 4;
 
 		for (int y = upperRowsToIgnore; y < lowerRowsToIgnore; y++)
@@ -148,7 +151,10 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 				screenPointer += 4;
 			}
 
-			screenPointer += lineEndIncrement;
+			screenPointer += (size_t)lineEndIncrement;
+			//screenPointer += (size_t)m_screenWidth * 4;
+			//screenPointer += (size_t)startColumnsToIgnore * 4;
+			texturePointer += (size_t)textureEndIncrement;
 		}
 	}
 	
