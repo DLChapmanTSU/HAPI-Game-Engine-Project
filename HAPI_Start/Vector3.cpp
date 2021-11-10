@@ -59,3 +59,10 @@ void Vector3::Normalize()
 		//m_z = std::roundf(m_z);
 	}
 }
+
+void Vector3::Invert()
+{
+	m_x = -m_x;
+	m_y = -m_y;
+	m_z = -m_z;
+}

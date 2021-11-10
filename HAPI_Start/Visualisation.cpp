@@ -10,9 +10,9 @@ Visualisation::Visualisation(int w, int h)
 	m_screenHeight = h;
 }
 
-void Visualisation::GenerateSprite(std::string d, std::string i, int w, int h, bool t)
+void Visualisation::GenerateSprite(std::string d, std::string i, int w, int h, bool t, int aw, int ah, bool a)
 {
-	m_sprites[i] = std::make_shared<Sprite>(d, w, h, t);
+	m_sprites[i] = std::make_shared<Sprite>(aw, ah, a, d, w, h, t);
 }
 
 void Visualisation::ClearToColour(HAPI_TColour& c, int w, int h)
@@ -43,6 +43,19 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	Rectangle clippedRect = textureRect;
 	//clippedRect.Translate(*p);
 	clippedRect.Clip(screenRect);
+	Vector3 invertedP = *p;
+	invertedP.Invert();
+	invertedP.SetX(std::roundf(invertedP.GetX()));
+	invertedP.SetY(std::roundf(invertedP.GetY()));
+	clippedRect.Translate(invertedP);
+
+	/*if (p->GetX() < 0) {
+		p->SetX(0);
+	}
+
+	if (p->GetY() < 0) {
+		p->SetY(0);
+	}*/
 
 	//Generic Sprite Rendering Here
 
@@ -54,38 +67,13 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	int upperRowsToIgnore{ clippedRect.m_top - textureRect.m_top };
 	int lowerRowsToIgnore{ m_sprites[n]->GetTextureHeight() - (textureRect.m_bottom - clippedRect.m_bottom) };
 
-	/*if (screenPositionToPointTo < 0) {
-		upperRowsToIgnore = (int)std::roundf(p->GetY());
-		upperRowsToIgnore = -(upperRowsToIgnore);
-	}*/
-
-	/*if (screenPositionToPointTo > ((m_screenWidth * m_screenHeight - (m_sprites[n]->GetTextureHeight() * m_screenWidth)) * 4)) {
-		lowerRowsToIgnore = m_sprites[n]->GetTextureHeight() - (m_screenHeight - (int)std::roundf(p->GetY()));
-
-		if (lowerRowsToIgnore > m_sprites[n]->GetTextureHeight()) {
-			return true;
-		}
-	}*/
+	
 
 	//float px = std::roundf(p->GetX());
 	int startColumnsToIgnore{ clippedRect.m_left - textureRect.m_left };
 	int endColumnsToIgnore{ m_sprites[n]->GetTextureWidth() - (textureRect.m_right - clippedRect.m_right) };
 
-	/*if (px < 0.0f) {
-		if (-px >= m_sprites[n]->GetTextureWidth()) {
-			return true;
-		}
-
-		startColumnsToIgnore = -(int)px;
-	}
-
-	if (px > m_screenWidth - m_sprites[n]->GetTextureWidth()) {
-		if (px >= m_screenWidth) {
-			return true;
-		}
-
-		endColumnsToIgnore = (int)(px + m_sprites[n]->GetTextureWidth()) - m_screenWidth;
-	}*/
+	
 
 	
 
@@ -105,16 +93,20 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	}
 	else {
 		//Calculates an offset to add to the pointer when the end of a row is reached
-		//int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4;
-		int lineEndIncrement = (int)(m_screenWidth - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
-		int textureEndIncrement = (int)(m_sprites[n]->GetTextureWidth() - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
-		screenPointer += (size_t)m_screenWidth * upperRowsToIgnore * 4;
+		int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4;
+		//int lineEndIncrement = (int)(m_screenWidth - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
+		//int textureEndIncrement = (int)(m_sprites[n]->GetTextureWidth() - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
+		//screenPointer += (size_t)m_screenWidth * upperRowsToIgnore * 4;
 		//screenPointer += (size_t)startColumnsToIgnore * 4;
-		texturePointer += (((size_t)m_sprites[n]->GetTextureHeight() * upperRowsToIgnore) + startColumnsToIgnore) * 4;
+		//texturePointer += (((size_t)m_sprites[n]->GetTextureHeight() * upperRowsToIgnore) + startColumnsToIgnore) * 4;
+		screenPointer += (size_t)clippedRect.m_top * m_screenWidth * 4;
+		texturePointer += (size_t)clippedRect.m_top * m_sprites[n]->GetTextureWidth() * 4;
+		screenPointer += (size_t)clippedRect.m_left * 4;
+		texturePointer += (size_t)clippedRect.m_left * 4;
 
-		for (int y = upperRowsToIgnore; y < lowerRowsToIgnore; y++)
+		for (int y = clippedRect.m_top; y < clippedRect.m_bottom; y++)
 		{
-			for (int x = startColumnsToIgnore; x < endColumnsToIgnore; x++)
+			for (int x = clippedRect.m_left; x < clippedRect.m_right; x++)
 			{
 				//Fetches the alpha of the current pixel
 				BYTE alpha = texturePointer[3];
@@ -152,9 +144,15 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 			}
 
 			screenPointer += (size_t)lineEndIncrement;
+			screenPointer += (size_t)clippedRect.m_left * 4;
+			texturePointer += (size_t)clippedRect.m_left * 4;
+
+			int widthDiff = m_sprites[n]->GetTextureWidth() - clippedRect.m_right;
+			screenPointer += (size_t)widthDiff * 4;
+			texturePointer += (size_t)widthDiff * 4;
 			//screenPointer += (size_t)m_screenWidth * 4;
 			//screenPointer += (size_t)startColumnsToIgnore * 4;
-			texturePointer += (size_t)textureEndIncrement;
+			//texturePointer += (size_t)textureEndIncrement;
 		}
 	}
 	

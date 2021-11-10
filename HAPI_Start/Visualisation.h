@@ -16,7 +16,7 @@ private:
 	BYTE* m_screen;
 public:
 	Visualisation(int w = 1024, int h = 768);
-	void GenerateSprite(std::string d, std::string i, int w, int h, bool t);
+	void GenerateSprite(std::string d, std::string i, int w, int h, bool t, int aw, int ah, bool a);
 	void ClearToColour(HAPI_TColour& c, int w, int h);
 	bool RenderTexture(std::shared_ptr<Vector3>& p, std::string n);
 	void ClearPointers();

@@ -14,6 +14,7 @@ public:
 	float GetY() const;
 	float GetZ() const;
 	void Normalize();
+	void Invert();
 
 	friend Vector3 operator+(Vector3& v1, Vector3& v2);
 };

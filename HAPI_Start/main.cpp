@@ -48,7 +48,7 @@ void HAPI_Main()
 	BYTE* screen = HAPI.GetScreenPointer();
 
 	Visualisation vis(width, height);
-	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true);
+	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true, 64, 64, false);
 	//vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false);
 	//vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
 
