@@ -62,7 +62,7 @@ void Vector3::Normalize()
 
 void Vector3::Invert()
 {
-	m_x = -m_x;
-	m_y = -m_y;
-	m_z = -m_z;
+	m_x -= m_x * 2;
+	m_y -= m_y * 2;
+	m_z -= m_z * 2;
 }

@@ -10,10 +10,11 @@ private:
 	int m_textureWidth;
 	int m_textureHeight;
 	bool m_hasTransparency{ false };
-	int m_animationOffset{ 0 };
-	int m_animationWidth;
-	int m_animationHeight;
+	int m_sheetWidth;
+	int m_sheetHeight;
 	bool m_isAnimation{ false };
+	int m_frameCount;
+	int m_currentFrame = 0;
 public:
 	Sprite(int aw, int ah, bool i = false, std::string s = "Data\\background.tga", int w = 64, int h = 64, bool t = false);
 	~Sprite();
@@ -21,4 +22,6 @@ public:
 	int GetTextureWidth() const { return m_textureWidth; };
 	int GetTextureHeight() const { return m_textureHeight; };
 	bool GetHasTransparency() const { return m_hasTransparency; };
+	void StepAnimation();
+	size_t GetTextureStepOffset();
 };

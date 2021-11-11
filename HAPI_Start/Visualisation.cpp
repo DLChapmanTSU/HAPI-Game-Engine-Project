@@ -45,9 +45,11 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	clippedRect.Clip(screenRect);
 	Vector3 invertedP = *p;
 	invertedP.Invert();
-	invertedP.SetX(std::roundf(invertedP.GetX()));
-	invertedP.SetY(std::roundf(invertedP.GetY()));
+	//invertedP.SetX(invertedP.GetX());
+	//invertedP.SetY(invertedP.GetY());
 	clippedRect.Translate(invertedP);
+
+	//TRANSFORM CLIPPED RECTANGLE BASED ON CURRENT SPRITE IN ANIMATION
 
 	/*if (p->GetX() < 0) {
 		p->SetX(0);

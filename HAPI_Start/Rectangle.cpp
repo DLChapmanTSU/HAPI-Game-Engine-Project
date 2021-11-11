@@ -30,8 +30,8 @@ void Rectangle::Clip(const Rectangle& r)
 
 void Rectangle::Translate(const Vector3& v)
 {
-	m_left += v.GetX();
-	m_right += v.GetX();
-	m_top += v.GetY();
-	m_bottom += v.GetY();
+	m_left += std::round(v.GetX());
+	m_right += std::round(v.GetX());
+	m_top += std::round(v.GetY());
+	m_bottom += std::round(v.GetY());
 }

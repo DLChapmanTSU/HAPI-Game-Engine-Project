@@ -49,6 +49,7 @@ void HAPI_Main()
 
 	Visualisation vis(width, height);
 	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true, 64, 64, false);
+	//vis.GenerateSprite("Data\\ken.png", "Ken", 102, 150, true, 1020, 150, true);
 	//vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false);
 	//vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
 
@@ -57,6 +58,7 @@ void HAPI_Main()
 	HAPI.SetShowFPS(true);
 
 	std::shared_ptr<Object> player = std::make_shared<Object>(301, 301, 0);
+	//std::shared_ptr<Object> animationTest = std::make_shared<Object>(100, 100, 0);
 	//std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0, 256, 256);
 	//std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
 
@@ -77,6 +79,11 @@ void HAPI_Main()
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
+
+		/*if (!vis.RenderTexture(animationTest->GetPosition(), "Ken")) {
+			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
+			HAPI.Close();
+		}*/
 		
 		/*if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
