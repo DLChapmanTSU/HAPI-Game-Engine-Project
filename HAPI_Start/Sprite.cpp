@@ -7,9 +7,21 @@ Sprite::Sprite(int aw, int ah, bool i, std::string s, int w, int h, bool t)
 	m_textureWidth = w;
 	m_textureHeight = h;
 	m_hasTransparency = t;
-	m_sheetWidth = aw;
-	m_sheetHeight = ah;
 	m_isAnimation = i;
+
+	if (m_isAnimation) {
+		m_sheetWidth = aw;
+		m_sheetHeight = ah;
+	}
+	else {
+		m_sheetWidth = w;
+		m_sheetHeight = h;
+		m_currentFrame = 0;
+	}
+	
+
+	//m_spriteOffset.first = 0;
+	//m_spriteOffset.second = 0;
 
 	m_frameCount = m_sheetWidth / m_textureWidth;
 	
@@ -41,11 +53,11 @@ void Sprite::StepAnimation()
 		return;
 	}
 
-	if (m_frameCount == m_currentFrame) {
-		m_texture = 0;
+	if (m_currentFrame >= m_frameCount - 1) {
+		m_currentFrame = 0;
 	}
 	else {
-		m_texture += (size_t)m_textureWidth * 4;
+		m_currentFrame++;
 	}
 }
 
