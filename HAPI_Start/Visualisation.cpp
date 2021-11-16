@@ -54,14 +54,6 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 
 	//TRANSFORM CLIPPED RECTANGLE BASED ON CURRENT SPRITE IN ANIMATION
 
-	/*if (p->GetX() < 0) {
-		p->SetX(0);
-	}
-
-	if (p->GetY() < 0) {
-		p->SetY(0);
-	}*/
-
 	//Generic Sprite Rendering Here
 
 	//Creates pointers to the texture and the first pixel in the screen to render to
@@ -69,56 +61,42 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 	BYTE* screenPointer = m_screen + screenPositionToPointTo;
 	BYTE* texturePointer = m_sprites[n]->GetTexturePointer();
 
-	//int upperRowsToIgnore{ clippedRect.m_top - textureRect.m_top };
-	//int lowerRowsToIgnore{ m_sprites[n]->GetTextureHeight() - (textureRect.m_bottom - clippedRect.m_bottom) };
-
-	
-
-	//float px = std::roundf(p->GetX());
-	//int startColumnsToIgnore{ clippedRect.m_left - textureRect.m_left };
-	//int endColumnsToIgnore{ m_sprites[n]->GetTextureWidth() - (textureRect.m_right - clippedRect.m_right) };
-
-	
-
-	
-
 	//Uses memcpy to blit line by line if there is no transparency and blits pixel by pixel if there is
 	if (m_sprites[n]->GetHasTransparency() == false) {
-		//Need to get the difference between the clipped rect and the actual width of the sprite
+		if (clippedRect.m_right - clippedRect.m_left > 0) {
+			//Need to get the difference between the clipped rect and the actual width of the sprite
 		//Use that as offset for the memcpy
-		int startOffset = (clippedRect.m_left - textureRect.m_left) * 4;
-		int endOffset = (m_sprites[n]->GetTextureWidth() - (textureRect.m_right - clippedRect.m_right)) * 4;
-		screenPointer += (size_t)startOffset;
-		for (int i = clippedRect.m_top; i < clippedRect.m_bottom; i++)
-		{
-			std::memcpy(screenPointer, texturePointer + (size_t)startOffset, (size_t)endOffset);
+			int startOffset = (m_screenWidth * clippedRect.m_top) * 4;
+			int endOffset = (m_sprites[n]->GetTextureWidth() - (textureRect.m_right - clippedRect.m_right)) * 4;
+			screenPointer += (size_t)startOffset;
+			texturePointer += (size_t)clippedRect.m_top * m_sprites[n]->GetTextureWidth() * 4;
+			screenPointer += (size_t)clippedRect.m_left * 4;
+			texturePointer += (size_t)clippedRect.m_left * 4;
+			for (int i = clippedRect.m_top; i < clippedRect.m_bottom; i++)
+			{
+				std::memcpy(screenPointer, texturePointer, ((size_t)clippedRect.m_right - clippedRect.m_left) * 4);
 
-			if (m_sprites[n]->GetIsAnimation() == true) {
-				texturePointer += ((size_t)m_sprites[n]->GetSheetWidth() - m_sprites[n]->GetTextureWidth()) * 4;
+				if (m_sprites[n]->GetIsAnimation() == true) {
+					texturePointer += ((size_t)m_sprites[n]->GetSheetWidth() - m_sprites[n]->GetTextureWidth()) * 4;
+				}
+				else {
+					texturePointer += (size_t)m_sprites[n]->GetTextureWidth() * 4;
+				}
+
+
+
+				screenPointer += (size_t)m_screenWidth * 4;
 			}
-			else {
-				texturePointer += (size_t)m_sprites[n]->GetTextureWidth() * 4;
-			}
-
-			
-
-			screenPointer += (size_t)m_screenWidth * 4;
-			//screenPointer += (size_t)startOffset;
 		}
 	}
 	else {
 		//Calculates an offset to add to the pointer when the end of a row is reached
 		int lineEndIncrement = (int)(m_screenWidth - m_sprites[n]->GetTextureWidth()) * 4;
-		//int lineEndIncrement = (int)(m_screenWidth - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
-		//int textureEndIncrement = (int)(m_sprites[n]->GetTextureWidth() - (endColumnsToIgnore - startColumnsToIgnore)) * 4;
-		//screenPointer += (size_t)m_screenWidth * upperRowsToIgnore * 4;
-		//screenPointer += (size_t)startColumnsToIgnore * 4;
-		//texturePointer += (((size_t)m_sprites[n]->GetTextureHeight() * upperRowsToIgnore) + startColumnsToIgnore) * 4;
 		screenPointer += (size_t)clippedRect.m_top * m_screenWidth * 4;
 		texturePointer += (size_t)clippedRect.m_top * m_sprites[n]->GetTextureWidth() * 4;
 		screenPointer += (size_t)clippedRect.m_left * 4;
 		texturePointer += (size_t)clippedRect.m_left * 4;
-		texturePointer += (size_t)(m_sprites[n]->GetCurrentFrame() * m_sprites[n]->GetTextureWidth()) * 4;
+		texturePointer += ((size_t)m_sprites[n]->GetCurrentFrame() * m_sprites[n]->GetTextureWidth()) * 4;
 
 		for (int y = clippedRect.m_top; y < clippedRect.m_bottom; y++)
 		{
@@ -159,8 +137,6 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 				screenPointer += 4;
 			}
 
-			//texturePointer += m_sprites[n]->GetTextureStepOffset();
-
 			if (m_sprites[n]->GetIsAnimation() == true) {
 				texturePointer += ((size_t)m_sprites[n]->GetSheetWidth() - m_sprites[n]->GetTextureWidth()) * 4;
 			}
@@ -174,9 +150,6 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 			int widthDiff = m_sprites[n]->GetTextureWidth() - clippedRect.m_right;
 			screenPointer += (size_t)widthDiff * 4;
 			texturePointer += (size_t)widthDiff * 4;
-			//screenPointer += (size_t)m_screenWidth * 4;
-			//screenPointer += (size_t)startColumnsToIgnore * 4;
-			//texturePointer += (size_t)textureEndIncrement;
 		}
 	}
 
