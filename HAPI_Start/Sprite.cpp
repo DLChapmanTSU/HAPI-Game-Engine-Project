@@ -69,3 +69,13 @@ size_t Sprite::GetTextureStepOffset()
 
 	return ((size_t)m_sheetWidth - m_textureWidth) * 4;
 }
+
+void Sprite::SetFrame(int i)
+{
+	if (i >= m_frameCount || i < 0) {
+		return;
+	}
+	else {
+		m_currentFrame = i;
+	}
+}

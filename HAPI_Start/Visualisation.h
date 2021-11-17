@@ -22,6 +22,6 @@ public:
 	//Could have the correct frame stored in the Object and have it passed through RenderTexture() and set before clipping/rendering
 	// 	   Would have to do away with Sprite::StepAnimation() for this, as this would become redundant
 	//Could re-structure to let the object hold a copy of its own sprite, but that wouldn't be effecient
-	bool RenderTexture(std::shared_ptr<Vector3>& p, std::string n);
+	bool RenderTexture(std::shared_ptr<Vector3>& p, std::string n, int f);
 	void ClearPointers();
 };

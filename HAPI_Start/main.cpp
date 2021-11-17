@@ -48,7 +48,7 @@ void HAPI_Main()
 	BYTE* screen = HAPI.GetScreenPointer();
 
 	Visualisation vis(width, height);
-	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, false, 64, 64, false);
+	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true, 64, 64, false);
 	vis.GenerateSprite("Data\\shapeTest.png", "Test", 64, 64, true, 256, 64, true);
 	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false, 256, 256, false);
 	//vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
@@ -58,29 +58,43 @@ void HAPI_Main()
 	HAPI.SetShowFPS(true);
 
 	std::shared_ptr<Object> player = std::make_shared<Object>(301, 301, 0);
-	std::shared_ptr<Object> animationTest = std::make_shared<Object>(100, 100, 0);
-	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0, 256, 256);
+	std::shared_ptr<Object> animationTest = std::make_shared<Object>(100, 100, 0, 4);
+	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0);
 	//std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
+
+	DWORD lastAnimationTime = HAPI.GetTime();
 
 	while (HAPI.Update()) {
 		//Clears screen to given colour
 		HAPI_TColour bgColour(10, 56, 33, 255);
 		vis.ClearToColour(bgColour, 1024, 768);
 
+		DWORD currentTime = HAPI.GetTime();
+
+		if (currentTime - lastAnimationTime >= (DWORD)500) {
+			if (animationTest->GetCurrentFrame() + 1 >= animationTest->GetMaxFrame()){
+				animationTest->SetCurrentFrame(0);
+			}
+			else {
+				animationTest->SetCurrentFrame(animationTest->GetCurrentFrame() + 1);
+			}
+			lastAnimationTime = HAPI.GetTime();
+		}
+
 		//Renders each object, taking in the key for the texture
 		//Ends the program if an invalid key is passed in
 		//Will return false if this is the case
-		if (!vis.RenderTexture(background->GetPosition(), "Background")) {
+		if (!vis.RenderTexture(background->GetPosition(), "Background", background->GetCurrentFrame())) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
 
-		if (!vis.RenderTexture(player->GetPosition(), "Player")) {
+		if (!vis.RenderTexture(player->GetPosition(), "Player", player->GetCurrentFrame())) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}
 
-		if (!vis.RenderTexture(animationTest->GetPosition(), "Test")) {
+		if (!vis.RenderTexture(animationTest->GetPosition(), "Test", animationTest->GetCurrentFrame())) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}

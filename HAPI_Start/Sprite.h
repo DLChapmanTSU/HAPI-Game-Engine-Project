@@ -15,7 +15,7 @@ private:
 	//std::pair<int, int> m_spriteOffset;
 	bool m_isAnimation{ false };
 	int m_frameCount;
-	int m_currentFrame = 1;
+	int m_currentFrame{ 0 };
 public:
 	Sprite(int aw, int ah, bool i = false, std::string s = "Data\\background.tga", int w = 64, int h = 64, bool t = false);
 	~Sprite();
@@ -29,4 +29,5 @@ public:
 	int GetCurrentFrame() const { return m_currentFrame; };
 	void StepAnimation();
 	size_t GetTextureStepOffset();
+	void SetFrame(int i);
 };

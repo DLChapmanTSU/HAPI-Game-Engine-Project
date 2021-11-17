@@ -31,11 +31,13 @@ void Visualisation::ClearToColour(HAPI_TColour& c, int w, int h)
 	}
 }
 
-bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
+bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n, int f)
 {
 	if (m_sprites.find(n) == m_sprites.end()) {
 		return false;
 	}
+
+	m_sprites[n]->SetFrame(f);
 
 	Rectangle screenRect(0, m_screenWidth, 0, m_screenHeight);
 	Rectangle textureRect(0, m_sprites[n]->GetTextureWidth(), 0, m_sprites[n]->GetTextureHeight());
@@ -153,7 +155,7 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n)
 		}
 	}
 
-	m_sprites[n]->StepAnimation();
+	//m_sprites[n]->StepAnimation();
 	
 	return true;
 }

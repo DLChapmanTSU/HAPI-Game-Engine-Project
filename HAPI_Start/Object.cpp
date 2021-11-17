@@ -5,11 +5,11 @@
 
 using namespace HAPISPACE;
 
-Object::Object(int x, int y, int z, int sx, int sy)
+Object::Object(int x, int y, int z, int m)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
-	m_sizeX = sx;
-	m_sizeY = sy;
+	m_maxFrame = m;
+	//m_spriteName = n;
 }
 
 void Object::SetPosition(Vector3& v)
@@ -29,7 +29,15 @@ void Object::Translate(Vector3& v)
 	m_position = std::make_shared<Vector3>(temp);
 }
 
-std::pair<int, int> Object::GetDimensions() const
+void Object::SetCurrentFrame(int f)
 {
-	return std::pair<int, int>(m_sizeX, m_sizeY);
+	if (f < 0) {
+		m_currentFrame = 0;
+	}
+	else if (f >= m_maxFrame) {
+		m_currentFrame = m_maxFrame - 1;
+	}
+	else {
+		m_currentFrame = f;
+	}
 }
