@@ -18,10 +18,6 @@ Sprite::Sprite(int aw, int ah, bool i, std::string s, int w, int h, bool t)
 		m_sheetHeight = h;
 		m_currentFrame = 0;
 	}
-	
-
-	//m_spriteOffset.first = 0;
-	//m_spriteOffset.second = 0;
 
 	m_frameCount = m_sheetWidth / m_textureWidth;
 	
@@ -49,6 +45,9 @@ Sprite::~Sprite()
 
 void Sprite::StepAnimation()
 {
+	//Increments the animation one frame forward
+	//Loops back to the first frame if m_currentFrame grows too big
+	//Useful for simple looping animations
 	if (m_isAnimation == false) {
 		return;
 	}
@@ -72,6 +71,8 @@ size_t Sprite::GetTextureStepOffset()
 
 void Sprite::SetFrame(int i)
 {
+	//Sets current frame of the animation.
+	//Defaults to either 0 or the max frame if the value is too big or small
 	if (i >= m_frameCount || i < 0) {
 		return;
 	}

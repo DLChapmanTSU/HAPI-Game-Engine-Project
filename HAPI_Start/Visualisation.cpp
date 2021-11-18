@@ -33,6 +33,7 @@ void Visualisation::ClearToColour(HAPI_TColour& c, int w, int h)
 
 bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n, int f)
 {
+	//Returns an error if the sprite doesn't exist
 	if (m_sprites.find(n) == m_sprites.end()) {
 		return false;
 	}
@@ -43,20 +44,16 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n, in
 	Rectangle textureRect(0, m_sprites[n]->GetTextureWidth(), 0, m_sprites[n]->GetTextureHeight());
 	textureRect.Translate(*p);
 	Rectangle clippedRect = textureRect;
-	//clippedRect.Translate(*p);
 	clippedRect.Clip(screenRect);
 	Vector3 invertedP = *p;
 	invertedP.Invert();
-	//invertedP.SetX(invertedP.GetX());
-	//invertedP.SetY(invertedP.GetY());
 	clippedRect.Translate(invertedP);
-	/*int frame = m_sprites[n]->GetCurrentFrame();
-	Vector3 frameOffset(frame * m_sprites[n]->GetTextureWidth(), 0.0f, 0.0f);
-	clippedRect.Translate(frameOffset);*/
-
-	//TRANSFORM CLIPPED RECTANGLE BASED ON CURRENT SPRITE IN ANIMATION
+	
 
 	//Generic Sprite Rendering Here
+	if (clippedRect.m_right - clippedRect.m_left <= 0 || clippedRect.m_bottom - clippedRect.m_top <= 0) {
+		return true;
+	}
 
 	//Creates pointers to the texture and the first pixel in the screen to render to
 	int screenPositionToPointTo = (int)((std::roundf(p->GetX()) + std::roundf(p->GetY()) * m_screenWidth) * 4.0f);
@@ -67,7 +64,7 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n, in
 	if (m_sprites[n]->GetHasTransparency() == false) {
 		if (clippedRect.m_right - clippedRect.m_left > 0) {
 			//Need to get the difference between the clipped rect and the actual width of the sprite
-		//Use that as offset for the memcpy
+			//Use that as offset for the memcpy
 			int startOffset = (m_screenWidth * clippedRect.m_top) * 4;
 			int endOffset = (m_sprites[n]->GetTextureWidth() - (textureRect.m_right - clippedRect.m_right)) * 4;
 			screenPointer += (size_t)startOffset;
@@ -139,23 +136,21 @@ bool Visualisation::RenderTexture(std::shared_ptr<Vector3>& p, std::string n, in
 				screenPointer += 4;
 			}
 
+			//Special offset to account for if a texture is an animation
 			if (m_sprites[n]->GetIsAnimation() == true) {
 				texturePointer += ((size_t)m_sprites[n]->GetSheetWidth() - m_sprites[n]->GetTextureWidth()) * 4;
 			}
 
+			//Regular offsets based on dimensions of the screen and the clipping
 			screenPointer += (size_t)lineEndIncrement;
 			screenPointer += (size_t)clippedRect.m_left * 4;
 			texturePointer += (size_t)clippedRect.m_left * 4;
-
-			
 
 			int widthDiff = m_sprites[n]->GetTextureWidth() - clippedRect.m_right;
 			screenPointer += (size_t)widthDiff * 4;
 			texturePointer += (size_t)widthDiff * 4;
 		}
 	}
-
-	//m_sprites[n]->StepAnimation();
 	
 	return true;
 }

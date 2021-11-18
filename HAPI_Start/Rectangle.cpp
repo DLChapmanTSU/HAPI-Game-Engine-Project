@@ -11,6 +11,8 @@ Rectangle::Rectangle(int l, int r, int t, int b)
 
 void Rectangle::Clip(const Rectangle& r)
 {
+	//Clips this rect to another given rect
+	//If the current bounds of this rect exceeds the bounds of the other, they are matched
 	if (m_left < r.m_left) {
 		m_left = r.m_left;
 	}
@@ -30,8 +32,8 @@ void Rectangle::Clip(const Rectangle& r)
 
 void Rectangle::Translate(const Vector3& v)
 {
-	m_left += std::round(v.GetX());
-	m_right += std::round(v.GetX());
-	m_top += std::round(v.GetY());
-	m_bottom += std::round(v.GetY());
+	m_left += (int)std::round(v.GetX());
+	m_right += (int)std::round(v.GetX());
+	m_top += (int)std::round(v.GetY());
+	m_bottom += (int)std::round(v.GetY());
 }

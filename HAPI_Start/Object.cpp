@@ -5,11 +5,10 @@
 
 using namespace HAPISPACE;
 
-Object::Object(int x, int y, int z, int m)
+Object::Object(float x, float y, float z, int m)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
 	m_maxFrame = m;
-	//m_spriteName = n;
 }
 
 void Object::SetPosition(Vector3& v)

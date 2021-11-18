@@ -12,7 +12,6 @@ private:
 	bool m_hasTransparency{ false };
 	int m_sheetWidth;
 	int m_sheetHeight;
-	//std::pair<int, int> m_spriteOffset;
 	bool m_isAnimation{ false };
 	int m_frameCount;
 	int m_currentFrame{ 0 };

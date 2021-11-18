@@ -51,16 +51,12 @@ void HAPI_Main()
 	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true, 64, 64, false);
 	vis.GenerateSprite("Data\\shapeTest.png", "Test", 64, 64, true, 256, 64, true);
 	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false, 256, 256, false);
-	//vis.GenerateSprite("Data\\alphaThing.tga", "AlphaThing", 64, 64, true);
-
-	std::shared_ptr<Object> star = std::make_shared<Object>(200, 200, 500);
 
 	HAPI.SetShowFPS(true);
 
-	std::shared_ptr<Object> player = std::make_shared<Object>(301, 301, 0);
-	std::shared_ptr<Object> animationTest = std::make_shared<Object>(100, 100, 0, 4);
-	std::shared_ptr<Object> background = std::make_shared<Object>(10, 10, 0);
-	//std::shared_ptr<Object> transparencyCheck = std::make_shared<Object>(500, 500, 0);
+	std::shared_ptr<Object> player = std::make_shared<Object>(301.0f, 301.0f, 0.0f);
+	std::shared_ptr<Object> animationTest = std::make_shared<Object>(100.0f, 100.0f, 0.0f, 4);
+	std::shared_ptr<Object> background = std::make_shared<Object>(10.0f, 10.0f, 0.0f);
 
 	DWORD lastAnimationTime = HAPI.GetTime();
 
@@ -71,6 +67,7 @@ void HAPI_Main()
 
 		DWORD currentTime = HAPI.GetTime();
 
+		//Updates animation if set time has elapsed
 		if (currentTime - lastAnimationTime >= (DWORD)500) {
 			if (animationTest->GetCurrentFrame() + 1 >= animationTest->GetMaxFrame()){
 				animationTest->SetCurrentFrame(0);
@@ -179,13 +176,6 @@ void HAPI_Main()
 			//ERROR
 		}
 	}
-
-	//Clears pointers to textures
-	//player->ClearPointers();
-	//background->ClearPointers();
-	//transparencyCheck->ClearPointers();
-
-	//delete[] screen;
 }
 
 void HorizontalLine(int x, int y, int l, int w, int h) {
