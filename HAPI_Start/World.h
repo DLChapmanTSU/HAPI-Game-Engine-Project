@@ -12,4 +12,5 @@ private:
 	std::shared_ptr<Object> m_playerObject;
 public:
 	World();
+	void Run();
 };

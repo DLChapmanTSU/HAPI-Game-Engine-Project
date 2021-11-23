@@ -37,3 +37,31 @@ void Rectangle::Translate(const Vector3& v)
 	m_top += (int)std::round(v.GetY());
 	m_bottom += (int)std::round(v.GetY());
 }
+
+bool Rectangle::IsOverlap(const Rectangle& r)
+{
+	bool leftOverlap{ false };
+	bool rightOverlap{ false };
+	bool topOverlap{ false };
+	bool bottomOverlap{ false };
+
+	if (m_left >= r.m_left && m_left <= r.m_right) {
+		leftOverlap = true;
+	}
+
+	if (m_right >= r.m_left && m_right <= r.m_right) {
+		rightOverlap = true;
+	}
+
+	if (m_top >= r.m_top && m_top <= r.m_bottom) {
+		topOverlap = true;
+	}
+
+	if (m_bottom >= r.m_top && m_bottom <= r.m_bottom) {
+		bottomOverlap = true;
+	}
+
+	
+
+	return (topOverlap || bottomOverlap) && (leftOverlap || rightOverlap);
+}

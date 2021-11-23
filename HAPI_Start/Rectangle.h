@@ -17,5 +17,6 @@ public:
 	Rectangle(int l = 0, int r = 0, int t = 0, int b = 0);
 	void Clip(const Rectangle& r);
 	void Translate(const Vector3& v);
+	bool IsOverlap(const Rectangle& r);
 };
 
