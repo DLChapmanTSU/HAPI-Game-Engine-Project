@@ -13,9 +13,21 @@
 World::World()
 {
 	//Create Player
-	m_playerObject = std::make_shared<PlayerObject>(std::pair<int,int>(64, 64), "Player", 301.0f, 301.0f, 0.0f);
+	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(64, 64), "Player", 301.0f, 301.0f, 0.0f);
 	//Create world objects for game
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 500.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 290.0f, 180.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 750.0f, 100.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f));
+
+	m_currentTime = HAPI.GetTime();
+	m_lastUpdateTime = HAPI.GetTime();
+	m_lastAnimationTime = HAPI.GetTime();
 }
 
 void World::Run()
@@ -23,7 +35,6 @@ void World::Run()
 	//Initialize screen dimensions and eyes distance from the screen
 	int width{ 1024 };
 	int height{ 768 };
-	float eyeDistance{ 500.0f };
 
 
 	if (!HAPI.Initialise(width, height, "HAPI_Screen"))
@@ -42,8 +53,7 @@ void World::Run()
 	//std::shared_ptr<Object> animationTest = std::make_shared<Object>(100.0f, 100.0f, 0.0f, 4);
 	//std::shared_ptr<Object> background = std::make_shared<Object>(10.0f, 10.0f, 0.0f);
 
-	DWORD lastAnimationTime = HAPI.GetTime();
-	DWORD lastUpdateTime = HAPI.GetTime();
+
 
 	while (HAPI.Update()) {
 		//Clears screen to given colour
@@ -54,13 +64,6 @@ void World::Run()
 		//If S is pressed, the eye distance is increased, drawing the eye away
 		//If W is pressed, the eye distance is decreased, bringing the eye closer to the screen
 		const HAPI_TKeyboardData& keyData = HAPI.GetKeyboardData();
-
-		if (keyData.scanCode['S'] && eyeDistance < 2000.0f) {
-			eyeDistance++;
-		}
-		else if (keyData.scanCode['W'] && eyeDistance > 1.0f) {
-			eyeDistance--;
-		}
 
 		const HAPI_TControllerData& conData = HAPI.GetControllerData(0);
 
@@ -106,64 +109,51 @@ void World::Run()
 
 		//Normalizes the vector before applying the translation
 		playerMove.Normalize();
-
-		DWORD currentTime = HAPI.GetTime();
-
-		if (currentTime - lastUpdateTime >= (DWORD)10) {
-			m_playerObject->Translate(playerMove);
-		}
-
-		//Updates animation if set time has elapsed
-		if (currentTime - lastAnimationTime >= (DWORD)500) {
-			/*if (animationTest->GetCurrentFrame() + 1 >= animationTest->GetMaxFrame()) {
-				animationTest->SetCurrentFrame(0);
-			}
-			else {
-				animationTest->SetCurrentFrame(animationTest->GetCurrentFrame() + 1);
-			}
-			lastAnimationTime = HAPI.GetTime();*/
-		}
+		m_playerObject->SetVelocity(playerMove);
 
 		//Check collisions between each object
 		m_playerObject->CheckCollision(m_worldObjects);
 
-		//Renders each object, taking in the key for the texture
-		//Ends the program if an invalid key is passed in
-		//Will return false if this is the case
-		/*if (!vis.RenderTexture(background->GetPosition(), "Background", background->GetCurrentFrame())) {
-			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
-			HAPI.Close();
-		}*/
+		m_currentTime = HAPI.GetTime();
 
-		if (!vis.RenderTexture(m_playerObject->GetPosition(), m_playerObject->GetSpriteKey(), m_playerObject->GetCurrentFrame())) {
-			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
-			HAPI.Close();
+		if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
+			m_playerObject->Update();
+			m_lastUpdateTime = HAPI.GetTime();
 		}
 
+		MasterRender(vis);
+	}
+}
+
+void World::MasterRender(Visualisation& v)
+{
+	//Updates animation if set time has elapsed
+	if (m_currentTime - m_lastAnimationTime >= (DWORD)20) {
+		//Update animations here
+		m_playerObject->SetCurrentFrame(m_playerObject->GetCurrentFrame() + 1);
 		for (std::shared_ptr<Object> o : m_worldObjects) {
-			if (!vis.RenderTexture(o->GetPosition(), o->GetSpriteKey(), o->GetCurrentFrame())) {
-				HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
-				HAPI.Close();
-			}
+			o->SetCurrentFrame(o->GetCurrentFrame() + 1);
 		}
 
-		/*if (!vis.RenderTexture(animationTest->GetPosition(), "Test", animationTest->GetCurrentFrame())) {
+		m_lastAnimationTime = HAPI.GetTime();
+		std::cout << "Yes Animation" << std::endl;
+	}
+	else {
+		std::cout << "No Animation" << std::endl;
+	}
+
+	//Renders each object, taking in the key for the texture
+	//Ends the program if an invalid key is passed in
+	//Will return false if this is the case
+	if (!v.RenderTexture(m_playerObject->GetPosition(), m_playerObject->GetSpriteKey(), m_playerObject->GetCurrentFrame())) {
+		HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
+		HAPI.Close();
+	}
+
+	for (std::shared_ptr<Object> o : m_worldObjects) {
+		if (!v.RenderTexture(o->GetPosition(), o->GetSpriteKey(), o->GetCurrentFrame())) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
-		}*/
-
-		/*if (!vis.RenderTexture(transparencyCheck->GetPosition(), "AlphaThing")) {
-			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
-			HAPI.Close();
-		}*/
-
-		
-
-
-
-		//Displays the eye distance to the top left of the screen
-		if (!HAPI.RenderText(0, 12, HAPI_TColour::WHITE, "Eye Distance: " + std::to_string((int)eyeDistance))) {
-			//ERROR
 		}
 	}
 }

@@ -9,19 +9,15 @@ using namespace HAPISPACE;
 Object::Object(std::pair<int, int> h, std::string k, float x, float y, float z, int m)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
+	m_velocity = std::make_shared<Vector3>(0.0f, 0.0f, 0.0f);
 	m_maxFrame = m;
 	m_hitboxDimensions = h;
 	m_spriteKey = k;
 }
 
-void Object::SetPosition(Vector3& v)
+void Object::SetPosition(const Vector3& v)
 {
 	m_position = std::make_shared<Vector3>(v);
-}
-
-std::shared_ptr<Vector3>& Object::GetPosition()
-{
-	return m_position;
 }
 
 void Object::Translate(Vector3& v)
@@ -44,12 +40,15 @@ void Object::SetCurrentFrame(int f)
 	}
 }
 
-void PlayerObject::Update(bool c)
+void Object::SetVelocity(const Vector3& v)
 {
-	//Collisions
-	if (c == true) {
+	m_velocity = std::make_shared<Vector3>(v);
+}
 
-	}
+void PlayerObject::Update()
+{
+	//Update position
+	Translate(*m_velocity);
 	//Animations
 }
 
@@ -61,15 +60,15 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o)
 		Rectangle otherHitbox(object->GetPosition()->GetX(), object->GetPosition()->GetX() + object->GetHitbox().first, object->GetPosition()->GetY(), object->GetPosition()->GetY() + object->GetHitbox().second);
 
 		if (myHitbox.IsOverlap(otherHitbox) == true) {
-			std::cout << "Collision" << std::endl;
+			//std::cout << "Collision" << std::endl;
 		}
 		else {
-			std::cout << "No Collision" << std::endl;
+			//std::cout << "No Collision" << std::endl;
 		}
 	}
 }
 
-void WallObject::Update(bool c)
+void WallObject::Update()
 {
 }
 
