@@ -31,7 +31,7 @@ void Visualisation::ClearToColour(HAPI_TColour& c, int w, int h)
 	}
 }
 
-bool Visualisation::RenderTexture(const std::shared_ptr<Vector3>& p, std::string n, int f)
+bool Visualisation::RenderTexture(const Vector3& p, std::string n, int f)
 {
 	//Returns an error if the sprite doesn't exist
 	if (m_sprites.find(n) == m_sprites.end()) {

@@ -83,16 +83,16 @@ void Sprite::SetFrame(int i)
 	}
 }
 
-void Sprite::Render(const std::shared_ptr<Vector3>& p, int f, BYTE*& s, int sw, int sh)
+void Sprite::Render(const Vector3& p, int f, BYTE*& s, int sw, int sh)
 {
 	SetFrame(f);
 
 	Rectangle screenRect(0, sw, 0, sh);
 	Rectangle textureRect(0, m_textureWidth, 0, m_textureHeight);
-	textureRect.Translate(*p);
+	textureRect.Translate(p);
 	Rectangle clippedRect = textureRect;
 	clippedRect.Clip(screenRect);
-	Vector3 invertedP = *p;
+	Vector3 invertedP = p;
 	invertedP.Invert();
 	clippedRect.Translate(invertedP);
 
@@ -103,7 +103,7 @@ void Sprite::Render(const std::shared_ptr<Vector3>& p, int f, BYTE*& s, int sw, 
 	}
 
 	//Creates pointers to the texture and the first pixel in the screen to render to
-	int screenPositionToPointTo = (int)((std::roundf(p->GetX()) + std::roundf(p->GetY()) * sw) * 4.0f);
+	int screenPositionToPointTo = (int)((std::roundf(p.GetX()) + std::roundf(p.GetY()) * sw) * 4.0f);
 	BYTE* screenPointer = s + screenPositionToPointTo;
 	BYTE* texturePointer = m_texture;
 

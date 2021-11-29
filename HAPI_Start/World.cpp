@@ -15,15 +15,15 @@ World::World()
 	//Create Player
 	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(64, 64), "Player", 301.0f, 301.0f, 0.0f);
 	//Create world objects for game
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 500.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 290.0f, 180.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 750.0f, 100.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 500.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 290.0f, 180.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 750.0f, 100.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
 
 	m_currentTime = HAPI.GetTime();
 	m_lastUpdateTime = HAPI.GetTime();
@@ -117,18 +117,22 @@ void World::Run()
 		m_currentTime = HAPI.GetTime();
 
 		if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
-			m_playerObject->Update();
 			m_lastUpdateTime = HAPI.GetTime();
+			m_playerObject->Update();
 		}
 
-		MasterRender(vis);
+		DWORD timeElapsed = m_currentTime - m_lastUpdateTime;
+
+		std::cout << timeElapsed << std::endl;
+
+		MasterRender(vis, timeElapsed);
 	}
 }
 
-void World::MasterRender(Visualisation& v)
+void World::MasterRender(Visualisation& v, DWORD s)
 {
 	//Updates animation if set time has elapsed
-	if (m_currentTime - m_lastAnimationTime >= (DWORD)20) {
+	if (m_currentTime - m_lastAnimationTime >= (DWORD)33) {
 		//Update animations here
 		m_playerObject->SetCurrentFrame(m_playerObject->GetCurrentFrame() + 1);
 		for (std::shared_ptr<Object> o : m_worldObjects) {
@@ -136,22 +140,29 @@ void World::MasterRender(Visualisation& v)
 		}
 
 		m_lastAnimationTime = HAPI.GetTime();
-		std::cout << "Yes Animation" << std::endl;
+		//std::cout << "Yes Animation" << std::endl;
 	}
-	else {
-		std::cout << "No Animation" << std::endl;
-	}
+
+	float fs = (float)s;
+
+	Vector3 lerpPosition;
+	lerpPosition.Lerp(*m_playerObject->GetPosition(), *m_playerObject->GetPosition() + *m_playerObject->GetVelocity(), fs / (DWORD)20);
+
+	std::cout << "X: " << lerpPosition.GetX() << " Y: " << lerpPosition.GetY() << std::endl;
+	std::cout << (float)(s / (DWORD)100) << std::endl;
+
+	const Vector3 lerped = lerpPosition;
 
 	//Renders each object, taking in the key for the texture
 	//Ends the program if an invalid key is passed in
 	//Will return false if this is the case
-	if (!v.RenderTexture(m_playerObject->GetPosition(), m_playerObject->GetSpriteKey(), m_playerObject->GetCurrentFrame())) {
+	if (!v.RenderTexture(lerped, m_playerObject->GetSpriteKey(), m_playerObject->GetCurrentFrame())) {
 		HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 		HAPI.Close();
 	}
 
 	for (std::shared_ptr<Object> o : m_worldObjects) {
-		if (!v.RenderTexture(o->GetPosition(), o->GetSpriteKey(), o->GetCurrentFrame())) {
+		if (!v.RenderTexture(*o->GetPosition(), o->GetSpriteKey(), o->GetCurrentFrame())) {
 			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 			HAPI.Close();
 		}

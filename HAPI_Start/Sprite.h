@@ -23,5 +23,5 @@ public:
 	void StepAnimation();
 	size_t GetTextureStepOffset();
 	void SetFrame(int i);
-	void Render(const std::shared_ptr<Vector3>& p, int f, BYTE*& s, int sw = 1024, int sh = 768);
+	void Render(const Vector3& p, int f, BYTE*& s, int sw = 1024, int sh = 768);
 };

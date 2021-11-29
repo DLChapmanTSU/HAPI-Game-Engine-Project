@@ -21,6 +21,8 @@ protected:
 	int m_maxFrame;
 	std::pair<int, int> m_hitboxDimensions;
 	std::string m_spriteKey;
+	bool m_isActive{ true };
+	ObjectTag m_tag;
 public:
 	Object(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0);
 	void SetPosition(const Vector3& v);
@@ -38,15 +40,24 @@ public:
 };
 
 class PlayerObject : public Object {
+private:
+	int m_health{ 100 };
 public:
-	PlayerObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0) : Object(h, k, x, y, z, m) {};
+	PlayerObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0) : Object(h, k, x, y, z, m) { m_tag = ObjectTag::E_FRIENDLY; };
 	void Update();
 	void CheckCollision(std::vector<std::shared_ptr<Object>>& o);
 };
 
 class WallObject : public Object {
 public:
-	WallObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0) : Object(h, k, x, y, z, m) {};
+	WallObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0) : Object(h, k, x, y, z, m) { m_tag = ObjectTag::E_NEUTRAL; };
+	void Update();
+	void CheckCollision(std::vector<std::shared_ptr<Object>>& o);
+};
+
+class BulletObject : public Object {
+public:
+	BulletObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0) : Object(h, k, x, y, z, m) { m_tag = ObjectTag::E_FRIENDLY; };
 	void Update();
 	void CheckCollision(std::vector<std::shared_ptr<Object>>& o);
 };

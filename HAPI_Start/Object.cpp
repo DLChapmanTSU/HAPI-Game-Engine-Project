@@ -33,7 +33,7 @@ void Object::SetCurrentFrame(int f)
 		m_currentFrame = 0;
 	}
 	else if (f >= m_maxFrame) {
-		m_currentFrame = m_maxFrame - 1;
+		m_currentFrame = 0;
 	}
 	else {
 		m_currentFrame = f;
@@ -42,14 +42,14 @@ void Object::SetCurrentFrame(int f)
 
 void Object::SetVelocity(const Vector3& v)
 {
-	m_velocity = std::make_shared<Vector3>(v);
+	Vector3 newVelocity = v;
+	m_velocity = std::make_shared<Vector3>(newVelocity * m_moveSpeed);
 }
 
 void PlayerObject::Update()
 {
 	//Update position
 	Translate(*m_velocity);
-	//Animations
 }
 
 void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o)
@@ -73,6 +73,25 @@ void WallObject::Update()
 }
 
 void WallObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o)
+{
+	Rectangle myHitbox(m_position->GetX(), m_position->GetX() + m_hitboxDimensions.first, m_position->GetY(), m_position->GetY() + m_hitboxDimensions.second);
+
+	for (std::shared_ptr<Object> object : o) {
+		Rectangle otherHitbox(object->GetPosition()->GetX(), object->GetPosition()->GetX() + object->GetHitbox().first, object->GetPosition()->GetY(), object->GetPosition()->GetY() + object->GetHitbox().second);
+
+		if (myHitbox.IsOverlap(otherHitbox) == true) {
+			std::cout << "Collision" << std::endl;
+		}
+	}
+}
+
+void BulletObject::Update()
+{
+	//Update position
+	Translate(*m_velocity);
+}
+
+void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o)
 {
 	Rectangle myHitbox(m_position->GetX(), m_position->GetX() + m_hitboxDimensions.first, m_position->GetY(), m_position->GetY() + m_hitboxDimensions.second);
 

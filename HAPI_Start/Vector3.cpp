@@ -66,3 +66,15 @@ void Vector3::Invert()
 	m_y -= m_y * 2;
 	m_z -= m_z * 2;
 }
+
+void Vector3::Lerp(Vector3& a, Vector3& b, float s)
+{
+	if (s < 0) {
+		s = 0;
+	}
+
+	Vector3 lerpResult = (a * (1.0f - s)) + (b * s);
+	m_x = lerpResult.m_x;
+	m_y = lerpResult.m_y;
+	m_z = lerpResult.m_z;
+}

@@ -18,6 +18,6 @@ public:
 	Visualisation(int w = 1024, int h = 768);
 	void GenerateSprite(std::string d, std::string i, int w, int h, bool t, int aw, int ah, bool a);
 	void ClearToColour(HAPI_TColour& c, int w, int h);
-	bool RenderTexture(const std::shared_ptr<Vector3>& p, std::string n, int f);
+	bool RenderTexture(const Vector3& p, std::string n, int f);
 	void ClearPointers();
 };
