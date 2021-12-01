@@ -13,7 +13,7 @@
 World::World()
 {
 	//Create Player
-	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(64, 64), "Player", 301.0f, 301.0f, 0.0f);
+	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(64, 64), "Player", 301.0f, 301.0f, 0.0f, 0, ObjectTag::E_FRIENDLY, true);
 	//Create world objects for game
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f, 4));
@@ -24,6 +24,12 @@ World::World()
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
+
+	for (size_t i = 0; i < 100; i++)
+	{
+		m_bulletPool.push_back(std::make_shared<BulletObject>(std::pair<int, int>(32, 32), "Bullet", 0.0f, 0.0f, 0.0f, 0, ObjectTag::E_FRIENDLY, false));
+		m_bulletPool.push_back(std::make_shared<BulletObject>(std::pair<int, int>(32, 32), "Bullet", 0.0f, 0.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	}
 
 	m_currentTime = HAPI.GetTime();
 	m_lastUpdateTime = HAPI.GetTime();
@@ -46,6 +52,7 @@ void World::Run()
 	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true, 64, 64, false);
 	vis.GenerateSprite("Data\\shapeTest.png", "Test", 64, 64, true, 256, 64, true);
 	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false, 256, 256, false);
+	vis.GenerateSprite("Data\\Bullet.png", "Bullet", 32, 32, true, 32, 32, false);
 
 	HAPI.SetShowFPS(true);
 
@@ -107,18 +114,36 @@ void World::Run()
 			}
 		}
 
+		if (keyData.scanCode[HK_SPACE]) {
+			for (std::shared_ptr<Object> o : m_bulletPool) {
+				if (o->GetIsActive() == false && o->GetTag() == ObjectTag::E_FRIENDLY) {
+					o->SetActive(true);
+					Vector3 spawnPos = *m_playerObject->GetPosition();
+					spawnPos.SetX(spawnPos.GetX() + 16.0f);
+					o->SetPosition(spawnPos);
+					o->SetVelocity(Vector3(0.0f, -1.0f, 0.0f));
+					break;
+				}
+			}
+		}
+
 		//Normalizes the vector before applying the translation
 		playerMove.Normalize();
 		m_playerObject->SetVelocity(playerMove);
 
 		//Check collisions between each object
-		m_playerObject->CheckCollision(m_worldObjects);
+		m_playerObject->CheckCollision(m_worldObjects, m_playerObject);
 
 		m_currentTime = HAPI.GetTime();
 
 		if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
 			m_lastUpdateTime = HAPI.GetTime();
 			m_playerObject->Update();
+			for (std::shared_ptr<Object> o : m_bulletPool) {
+				if (o->GetIsActive() == true) {
+					o->Update();
+				}
+			}
 		}
 
 		DWORD timeElapsed = m_currentTime - m_lastUpdateTime;
@@ -143,7 +168,7 @@ void World::MasterRender(Visualisation& v, DWORD s)
 		//std::cout << "Yes Animation" << std::endl;
 	}
 
-	float fs = (float)s;
+	/*float fs = (float)s;
 
 	Vector3 lerpPosition;
 	lerpPosition.Lerp(*m_playerObject->GetPosition(), *m_playerObject->GetPosition() + *m_playerObject->GetVelocity(), fs / (DWORD)20);
@@ -151,20 +176,18 @@ void World::MasterRender(Visualisation& v, DWORD s)
 	std::cout << "X: " << lerpPosition.GetX() << " Y: " << lerpPosition.GetY() << std::endl;
 	std::cout << (float)(s / (DWORD)100) << std::endl;
 
-	const Vector3 lerped = lerpPosition;
+	const Vector3 lerped = lerpPosition;*/
 
 	//Renders each object, taking in the key for the texture
 	//Ends the program if an invalid key is passed in
 	//Will return false if this is the case
-	if (!v.RenderTexture(lerped, m_playerObject->GetSpriteKey(), m_playerObject->GetCurrentFrame())) {
-		HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
-		HAPI.Close();
-	}
+	m_playerObject->Render(v, s);
 
 	for (std::shared_ptr<Object> o : m_worldObjects) {
-		if (!v.RenderTexture(*o->GetPosition(), o->GetSpriteKey(), o->GetCurrentFrame())) {
-			HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
-			HAPI.Close();
-		}
+		o->Render(v, s);
+	}
+
+	for (std::shared_ptr<Object> o : m_bulletPool) {
+		o->Render(v, s);
 	}
 }
