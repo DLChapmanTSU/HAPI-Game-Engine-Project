@@ -40,6 +40,8 @@ void Rectangle::Translate(const Vector3& v)
 
 bool Rectangle::IsOverlap(const Rectangle& r)
 {
+	//Checks for an overlap between itself and a given rectangle
+	//Used mainly for collision detection
 	bool leftOverlap{ false };
 	bool rightOverlap{ false };
 	bool topOverlap{ false };

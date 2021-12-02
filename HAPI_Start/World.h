@@ -21,5 +21,5 @@ public:
 	World();
 	void Run();
 private:
-	void MasterRender(Visualisation& v, DWORD s);
+	void MasterRender(Visualisation& v, float s);
 };

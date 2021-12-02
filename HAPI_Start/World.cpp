@@ -55,10 +55,7 @@ void World::Run()
 	vis.GenerateSprite("Data\\Bullet.png", "Bullet", 32, 32, true, 32, 32, false);
 
 	HAPI.SetShowFPS(true);
-
-	//std::shared_ptr<Object> player = std::make_shared<Object>(301.0f, 301.0f, 0.0f);
-	//std::shared_ptr<Object> animationTest = std::make_shared<Object>(100.0f, 100.0f, 0.0f, 4);
-	//std::shared_ptr<Object> background = std::make_shared<Object>(10.0f, 10.0f, 0.0f);
+	HAPI.LimitFrameRate(60);
 
 
 
@@ -67,54 +64,9 @@ void World::Run()
 		HAPI_TColour bgColour(10, 56, 33, 255);
 		vis.ClearToColour(bgColour, 1024, 768);
 
-		//Checks user keyboard inputs
-		//If S is pressed, the eye distance is increased, drawing the eye away
-		//If W is pressed, the eye distance is decreased, bringing the eye closer to the screen
-		const HAPI_TKeyboardData& keyData = HAPI.GetKeyboardData();
+		
 
-		const HAPI_TControllerData& conData = HAPI.GetControllerData(0);
-
-		Vector3 playerMove(0.0f, 0.0f, 0.0f);
-
-		//Checks to see if the controller is plugged in
-		//If it is, movement is calculated using the left thumb stick
-		//Otherwise, movement is done using the arrow keys
-		if (conData.isAttached) {
-			//Controller Inputs
-			if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] > 10000 || conData.digitalButtons[HK_DIGITAL_DPAD_UP] == true) {
-				playerMove = playerMove + Vector3(0.0f, -5.0f, 0.0f);
-			}
-			else if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] < -10000 || conData.digitalButtons[HK_DIGITAL_DPAD_DOWN] == true) {
-				playerMove = playerMove + Vector3(0.0f, 5.0f, 0.0f);
-			}
-
-			if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] > 10000 || conData.digitalButtons[HK_DIGITAL_DPAD_RIGHT] == true) {
-				playerMove = playerMove + Vector3(5.0f, 0.0f, 0.0f);
-			}
-			else if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -10000 || conData.digitalButtons[HK_DIGITAL_DPAD_LEFT] == true) {
-				playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
-			}
-		}
-		else {
-			//Arrow Key Inputs
-			if (keyData.scanCode[HK_UP]) {
-				playerMove = playerMove + Vector3(0.0f, -5.0f, 0.0f);
-			}
-
-			if (keyData.scanCode[HK_DOWN]) {
-				playerMove = playerMove + Vector3(0.0f, 5.0f, 0.0f);
-			}
-
-			if (keyData.scanCode[HK_RIGHT]) {
-				playerMove = playerMove + Vector3(5.0f, 0.0f, 0.0f);
-			}
-
-			if (keyData.scanCode[HK_LEFT]) {
-				playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
-			}
-		}
-
-		if (keyData.scanCode[HK_SPACE]) {
+		/*if (keyData.scanCode[HK_SPACE]) {
 			for (std::shared_ptr<Object> o : m_bulletPool) {
 				if (o->GetIsActive() == false && o->GetTag() == ObjectTag::E_FRIENDLY) {
 					o->SetActive(true);
@@ -125,11 +77,9 @@ void World::Run()
 					break;
 				}
 			}
-		}
+		}*/
 
-		//Normalizes the vector before applying the translation
-		playerMove.Normalize();
-		m_playerObject->SetVelocity(playerMove);
+		
 
 		//Check collisions between each object
 		m_playerObject->CheckCollision(m_worldObjects, m_playerObject);
@@ -148,13 +98,16 @@ void World::Run()
 
 		DWORD timeElapsed = m_currentTime - m_lastUpdateTime;
 
+		float fTime = (float)timeElapsed;
+		fTime /= 50.0f;
+
 		std::cout << timeElapsed << std::endl;
 
-		MasterRender(vis, timeElapsed);
+		MasterRender(vis, fTime);
 	}
 }
 
-void World::MasterRender(Visualisation& v, DWORD s)
+void World::MasterRender(Visualisation& v, float s)
 {
 	//Updates animation if set time has elapsed
 	if (m_currentTime - m_lastAnimationTime >= (DWORD)33) {

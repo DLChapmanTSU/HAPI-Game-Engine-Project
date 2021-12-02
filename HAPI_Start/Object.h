@@ -40,7 +40,7 @@ public:
 	const bool GetIsActive() const { return m_isActive; };
 	void SetActive(bool a);
 	void SetVelocity(const Vector3& v);
-	bool Render(Visualisation& v, DWORD s);
+	bool Render(Visualisation& v, float s);
 	virtual void Update() = 0;
 	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p) = 0;
 };
