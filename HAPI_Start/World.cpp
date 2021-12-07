@@ -88,10 +88,10 @@ void World::Run()
 
 		if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
 			m_lastUpdateTime = HAPI.GetTime();
-			m_playerObject->Update();
+			m_playerObject->Update(*this);
 			for (std::shared_ptr<Object> o : m_bulletPool) {
 				if (o->GetIsActive() == true) {
-					o->Update();
+					o->Update(*this);
 				}
 			}
 		}
@@ -104,6 +104,18 @@ void World::Run()
 		std::cout << timeElapsed << std::endl;
 
 		MasterRender(vis, fTime);
+	}
+}
+
+void World::SpawnBullet(Vector3& p, Vector3& v)
+{
+	for (std::shared_ptr<Object> b : m_bulletPool) {
+		if (b->GetIsActive() == false) {
+			b->SetPosition(p);
+			b->SetVelocity(v);
+			b->SetActive(true);
+			break;
+		}
 	}
 }
 

@@ -2,6 +2,7 @@
 #include "Vector3.h"
 #include "Rectangle.h"
 #include "Visualisation.h"
+#include "World.h"
 
 #include <HAPI_lib.h>
 
@@ -80,8 +81,10 @@ bool Object::Render(Visualisation& v, float s)
 	return true;
 }
 
-void PlayerObject::Update()
+void PlayerObject::Update(World& w)
 {
+	m_currentTime = HAPI.GetTime();
+
 	//Checks user keyboard inputs
 		//If S is pressed, the eye distance is increased, drawing the eye away
 		//If W is pressed, the eye distance is decreased, bringing the eye closer to the screen
@@ -89,7 +92,10 @@ void PlayerObject::Update()
 
 	const HAPI_TControllerData& conData = HAPI.GetControllerData(0);
 
+	const HAPI_TMouseData& mouseData = HAPI.GetMouseData();
+
 	Vector3 playerMove(0.0f, 0.0f, 0.0f);
+	Vector3 target(0.0f, 0.0f, 0.0f);
 
 	//Checks to see if the controller is plugged in
 	//If it is, movement is calculated using the left thumb stick
@@ -109,6 +115,16 @@ void PlayerObject::Update()
 		else if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X] < -10000 || conData.digitalButtons[HK_DIGITAL_DPAD_LEFT] == true) {
 			playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
 		}
+
+		Vector3 aimPos = Vector3(conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_X], conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_Y], 0.0f);
+		aimPos.Normalize();
+
+		target = aimPos - *m_position;
+
+		if (conData.digitalButtons[HK_DIGITAL_X] == true && (m_currentTime - m_shotTime) >= m_shotCooldown) {
+			w.SpawnBullet(*m_position, target);
+			m_shotTime = HAPI.GetTime();
+		}
 	}
 	else {
 		//Arrow Key Inputs
@@ -126,6 +142,15 @@ void PlayerObject::Update()
 
 		if (keyData.scanCode[HK_LEFT]) {
 			playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
+		}
+
+		Vector3 mousePos = Vector3(mouseData.x, mouseData.y, 0.0f);
+		target = mousePos - *m_position;
+		target.Normalize();
+
+		if (mouseData.leftButtonDown && (m_currentTime - m_shotTime) >= m_shotCooldown) {
+			w.SpawnBullet(*m_position, target);
+			m_shotTime = HAPI.GetTime();
 		}
 	}
 
@@ -155,7 +180,7 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 	}
 }
 
-void WallObject::Update()
+void WallObject::Update(World& w)
 {
 	//Walls don't need to update
 }
@@ -174,7 +199,7 @@ void WallObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::sh
 	}
 }
 
-void BulletObject::Update()
+void BulletObject::Update(World& w)
 {
 	if (m_lifeTime >= 10.0f) {
 		m_lifeTime = 0.0f;
@@ -183,7 +208,7 @@ void BulletObject::Update()
 	}
 
 	//Update position
-	Translate(*m_velocity);
+	Translate(*m_velocity * m_moveSpeed);
 
 	m_lifeTime += 0.1f;
 }

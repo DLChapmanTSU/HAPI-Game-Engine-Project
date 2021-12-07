@@ -19,6 +19,7 @@ public:
 
 	friend Vector3 operator+(Vector3& v1, Vector3& v2);
 	friend Vector3 operator*(Vector3& v, float n);
+	friend Vector3 operator-(Vector3& v1, Vector3& v2);
 };
 
 inline Vector3 operator+(Vector3& v1, Vector3& v2) {
@@ -35,5 +36,15 @@ inline Vector3 operator*(Vector3& v, float n) {
 	result.m_x = v.m_x * n;
 	result.m_y = v.m_y * n;
 	result.m_z = v.m_z * n;
+
+	return result;
+}
+
+inline Vector3 operator-(Vector3& v1, Vector3& v2) {
+	Vector3 result;
+	result.m_x = v1.m_x - v2.m_x;
+	result.m_y = v1.m_y - v2.m_y;
+	result.m_z = v1.m_z - v2.m_z;
+	
 	return result;
 }

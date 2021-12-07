@@ -7,6 +7,7 @@ using namespace HAPISPACE;
 class Object;
 class CharacterObject;
 class Visualisation;
+class Vector3;
 
 class World {
 private:
@@ -20,6 +21,7 @@ private:
 public:
 	World();
 	void Run();
+	void SpawnBullet(Vector3& p, Vector3& v);
 private:
 	void MasterRender(Visualisation& v, float s);
 };
