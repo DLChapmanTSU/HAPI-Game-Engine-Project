@@ -99,7 +99,7 @@ void Sprite::Render(const Vector3& p, int f, BYTE*& s, int sw, int sh)
 
 	//Generic Sprite Rendering Here
 	if (clippedRect.m_right - clippedRect.m_left <= 0 || clippedRect.m_bottom - clippedRect.m_top <= 0) {
-		std::cout << "Not on screen" << std::endl;
+		//std::cout << "Not on screen" << std::endl;
 		return;
 	}
 

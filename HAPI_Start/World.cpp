@@ -2,6 +2,10 @@
 #include "Object.h"
 #include "Vector3.h"
 #include "Visualisation.h"
+#include "CharacterObject.h"
+#include "PlayerObject.h"
+#include "BulletObject.h"
+#include "WallObject.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -101,7 +105,7 @@ void World::Run()
 		float fTime = (float)timeElapsed;
 		fTime /= 50.0f;
 
-		std::cout << timeElapsed << std::endl;
+		//std::cout << timeElapsed << std::endl;
 
 		MasterRender(vis, fTime);
 	}
