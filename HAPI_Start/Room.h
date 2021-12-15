@@ -6,6 +6,8 @@
 //Room will act as a node in a graph, with the map acting as the overall graph
 //Map will set connections, the Room is purely for holding connection and spawn point data
 
+class Map;
+
 enum class RoomDirection {
 	E_UP,
 	E_DOWN,
@@ -14,13 +16,15 @@ enum class RoomDirection {
 };
 
 struct Room {
-private:
-	std::shared_ptr<Room> m_up;
-	std::shared_ptr<Room> m_down;
-	std::shared_ptr<Room> m_left;
-	std::shared_ptr<Room> m_right;
-	std::vector<Vector3> m_spawnPoints;
-	unsigned int m_index;
 public:
-	Room(std::vector<Vector3>& s, unsigned int i);
+	size_t m_up{ 0 };
+	size_t m_down{ 0 };
+	size_t m_left{ 0 };
+	size_t m_right{ 0 };
+	size_t m_index;
+	std::vector<Vector3> m_spawnPoints;
+
+	friend class Map;
+public:
+	Room(size_t i);
 };

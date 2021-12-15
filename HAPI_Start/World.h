@@ -8,6 +8,7 @@ class Object;
 class CharacterObject;
 class Visualisation;
 class Vector3;
+class Map;
 
 class World {
 private:
@@ -18,6 +19,7 @@ private:
 	DWORD m_currentTime;
 	DWORD m_lastUpdateTime;
 	DWORD m_lastAnimationTime;
+	std::shared_ptr<Map> m_map;
 public:
 	World();
 	void Run();

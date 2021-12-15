@@ -6,6 +6,8 @@
 #include "PlayerObject.h"
 #include "BulletObject.h"
 #include "WallObject.h"
+#include "Map.h"
+#include "Room.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -38,6 +40,13 @@ World::World()
 	m_currentTime = HAPI.GetTime();
 	m_lastUpdateTime = HAPI.GetTime();
 	m_lastAnimationTime = HAPI.GetTime();
+
+	Map myMap;
+	//myMap.GenerateMap();
+	//std::cout << "Generation Attempted" << std::endl;
+
+	m_map = std::make_shared<Map>(myMap);
+	//m_map->GenerateMap();
 }
 
 void World::Run()
@@ -46,6 +55,7 @@ void World::Run()
 	int width{ 1024 };
 	int height{ 768 };
 
+	m_map->GenerateMap();
 
 	if (!HAPI.Initialise(width, height, "HAPI_Screen"))
 		return;

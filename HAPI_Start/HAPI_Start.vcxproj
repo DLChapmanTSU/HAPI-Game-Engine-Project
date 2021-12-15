@@ -27,6 +27,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlayerObject.cpp" />
     <ClCompile Include="Rectangle.cpp" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClInclude Include="BulletObject.h" />
     <ClInclude Include="CharacterObject.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PlayerObject.h" />
     <ClInclude Include="Rectangle.h" />
