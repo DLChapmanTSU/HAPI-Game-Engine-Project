@@ -88,17 +88,33 @@ void PlayerObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 }
 
-void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p)
+void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p, World& w)
 {
 	//Checks for any collisions using rectangles
 	//Will handle behaviour such as snapping back when running into a wall
 	Rectangle myHitbox((int)m_position->GetX(), (int)m_position->GetX() + m_hitboxDimensions.first, (int)m_position->GetY(), (int)m_position->GetY() + m_hitboxDimensions.second);
 
 	for (std::shared_ptr<Object> object : o) {
+		if (object->GetIsActive() == false) {
+			continue;
+		}
+
 		Rectangle otherHitbox((int)object->GetPosition()->GetX(), (int)object->GetPosition()->GetX() + object->GetHitbox().first, (int)object->GetPosition()->GetY(), (int)object->GetPosition()->GetY() + object->GetHitbox().second);
 
 		if (myHitbox.IsOverlap(otherHitbox) == true) {
-			//std::cout << "Collision" << std::endl;
+			switch (object->GetTag())
+			{
+			case ObjectTag::E_FRIENDLY:
+				break;
+			case ObjectTag::E_ENEMY:
+				break;
+			case ObjectTag::E_NEUTRAL:
+				break;
+			case ObjectTag::E_DOOR:
+				break;
+			default:
+				break;
+			}
 		}
 		else {
 			//std::cout << "No Collision" << std::endl;

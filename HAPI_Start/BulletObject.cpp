@@ -19,7 +19,7 @@ void BulletObject::Update(World& w)
 	m_lifeTime += 0.1f;
 }
 
-void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p)
+void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p, World& w)
 {
 	//Checks for any collisions using rectangles
 	//Handles killing itself and damaging characters with a different tag

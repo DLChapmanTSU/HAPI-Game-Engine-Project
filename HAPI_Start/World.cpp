@@ -76,7 +76,7 @@ void World::Run()
 	while (HAPI.Update()) {
 		//Clears screen to given colour
 		HAPI_TColour bgColour(10, 56, 33, 255);
-		vis.ClearToColour(bgColour, 1024, 768);
+		vis.ClearToColour(m_map->GetCurrentRoom().GetColour(), 1024, 768);
 
 		
 
@@ -96,7 +96,7 @@ void World::Run()
 		
 
 		//Check collisions between each object
-		m_playerObject->CheckCollision(m_worldObjects, m_playerObject);
+		m_playerObject->CheckCollision(m_worldObjects, m_playerObject, *this);
 
 		m_currentTime = HAPI.GetTime();
 
@@ -131,6 +131,10 @@ void World::SpawnBullet(Vector3& p, Vector3& v)
 			break;
 		}
 	}
+}
+
+void World::MoveRoom(Object& d)
+{
 }
 
 void World::MasterRender(Visualisation& v, float s)

@@ -12,7 +12,8 @@ class World;
 enum class ObjectTag {
 	E_FRIENDLY,
 	E_ENEMY,
-	E_NEUTRAL
+	E_NEUTRAL,
+	E_DOOR
 };
 
 class Object {
@@ -43,5 +44,5 @@ public:
 	void SetVelocity(const Vector3& v);
 	bool Render(Visualisation& v, float s);
 	virtual void Update(World& w) = 0;
-	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p) = 0;
+	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p, World& w) = 0;
 };

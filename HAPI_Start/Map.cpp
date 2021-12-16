@@ -5,71 +5,103 @@
 
 Map::Map()
 {
-
+	for (size_t i = 0; i < 5; i++)
+	{
+		for (size_t j = 0; j < 5; j++)
+		{
+			m_rooms[1][j] = Room();
+		}
+	}
 }
 
 void Map::GenerateMap()
 {
-	m_rooms.clear();
+	//m_rooms.clear();
 
-	for (size_t i = 1; i <= 10; i++)
-	{
-		m_rooms.push_back(std::make_shared<Room>(i));
-	}
+	m_rooms[m_currentRoomY][m_currentRoomX].m_up = true;
+	m_rooms[m_currentRoomY][m_currentRoomX].m_down = true;
+	m_rooms[m_currentRoomY][m_currentRoomX].m_left = true;
+	m_rooms[m_currentRoomY][m_currentRoomX].m_right = true;
 
-	ConnectRoom(1, 2, RoomDirection::E_UP);
-	ConnectRoom(1, 3, RoomDirection::E_DOWN);
-	ConnectRoom(1, 4, RoomDirection::E_LEFT);
-	ConnectRoom(1, 5, RoomDirection::E_RIGHT);
+	m_rooms[m_currentRoomY + 1][m_currentRoomX].m_up = true;
+	m_rooms[m_currentRoomY - 1][m_currentRoomX].m_down = true;
+	m_rooms[m_currentRoomY][m_currentRoomX + 1].m_left = true;
+	m_rooms[m_currentRoomY][m_currentRoomX - 1].m_right = true;
 
 	int connectionsMade{ 0 };
 
 	while (connectionsMade < 10)
 	{
-		int r1Rand = std::rand() % 4 + 2;
-		int r2Rand = std::rand() % 5 + 6;
-		if (!ConnectRoom(r1Rand, r2Rand, RoomDirection(std::rand() % 4)) && connectionsMade > 0) {
-			connectionsMade--;
-		}
-		else {
-			connectionsMade++;
+		int xRand = std::rand() % 5;
+		int yRand = std::rand() % 5;
+		
+		RoomDirection dirRand = RoomDirection(std::rand() % 4);
+
+		switch (dirRand)
+		{
+		case RoomDirection::E_UP:
+			if (yRand - 1 < 0) {
+				break;
+			}
+
+			if (m_rooms[yRand][xRand].m_up == false && m_rooms[yRand - 1][xRand].IsReachable() == true) {
+				m_rooms[yRand][xRand].m_up = true;
+				m_rooms[yRand - 1][xRand].m_down = true;
+				connectionsMade++;
+			}
+			break;
+		case RoomDirection::E_DOWN:
+			if (yRand + 1 >= 5) {
+				break;
+			}
+
+			if (m_rooms[yRand][xRand].m_down == false && m_rooms[yRand + 1][xRand].IsReachable() == true) {
+				m_rooms[yRand][xRand].m_down = true;
+				m_rooms[yRand + 1][xRand].m_up = true;
+				connectionsMade++;
+			}
+			break;
+		case RoomDirection::E_LEFT:
+			if (xRand - 1 < 0) {
+				break;
+			}
+
+			if (m_rooms[yRand][xRand].m_left == false && m_rooms[yRand][xRand - 1].IsReachable() == true) {
+				m_rooms[yRand][xRand].m_left = true;
+				m_rooms[yRand][xRand - 1].m_right = true;
+				connectionsMade++;
+			}
+			break;
+		case RoomDirection::E_RIGHT:
+			if (xRand + 1 >= 5) {
+				break;
+			}
+
+			if (m_rooms[yRand][xRand].m_right == false && m_rooms[yRand][xRand + 1].IsReachable() == true) {
+				m_rooms[yRand][xRand].m_right = true;
+				m_rooms[yRand][xRand + 1].m_left = true;
+				connectionsMade++;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
 	std::cout << "Generated Map" << std::endl;
-}
 
-bool Map::ConnectRoom(size_t r1, size_t r2, RoomDirection d)
-{
-	switch (d)
+	for (size_t i = 0; i < 5; i++)
 	{
-	case RoomDirection::E_UP:
-		if (m_rooms[r1 - 1]->m_up == 0 && m_rooms[r2 - 1]->m_down == 0) {
-			m_rooms[r1 - 1]->m_up = m_rooms[r2 - 1]->m_index;
-			m_rooms[r2 - 1]->m_down = m_rooms[r1 - 1]->m_index;
+		for (size_t j = 0; j < 5; j++)
+		{
+			if (m_rooms[i][j].IsReachable() == true) {
+				std::cout << "1";
+			}
+			else {
+				std::cout << "0";
+			}
 		}
-		break;
-	case RoomDirection::E_DOWN:
-		if (m_rooms[r1 - 1]->m_down == 0 && m_rooms[r2 - 1]->m_up == 0) {
-			m_rooms[r1 - 1]->m_down = m_rooms[r2 - 1]->m_index;
-			m_rooms[r2 - 1]->m_up = m_rooms[r1 - 1]->m_index;
-		}
-		break;
-	case RoomDirection::E_LEFT:
-		if (m_rooms[r1 - 1]->m_left == 0 && m_rooms[r2 - 1]->m_right == 0) {
-			m_rooms[r1 - 1]->m_left = m_rooms[r2 - 1]->m_index;
-			m_rooms[r2 - 1]->m_right = m_rooms[r1 - 1]->m_index;
-		}
-		break;
-	case RoomDirection::E_RIGHT:
-		if (m_rooms[r1 - 1]->m_right == 0 && m_rooms[r2 - 1]->m_left == 0) {
-			m_rooms[r1 - 1]->m_right = m_rooms[r2 - 1]->m_index;
-			m_rooms[r2 - 1]->m_left = m_rooms[r1 - 1]->m_index;
-		}
-		break;
-	default:
-		return false;
-		break;
+
+		std::cout << std::endl;
 	}
-	return true;
 }

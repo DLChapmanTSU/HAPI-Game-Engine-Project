@@ -13,11 +13,11 @@ private:
 	//std::vector<Room> m_rooms;
 	//std::shared_ptr<Room> m_startRoom;
 	//std::shared_ptr<Room> m_currentRoom;
-	size_t m_currentRoom{ 0 };
-	std::vector<std::shared_ptr<Room>> m_rooms;
+	size_t m_currentRoomX{ 2 };
+	size_t m_currentRoomY{ 2 };
+	Room m_rooms[5][5];
 public:
 	Map();
 	void GenerateMap();
-private:
-	bool ConnectRoom(size_t r1, size_t r2, RoomDirection d);
+	Room& GetCurrentRoom() { return m_rooms[m_currentRoomY][m_currentRoomX]; };
 };

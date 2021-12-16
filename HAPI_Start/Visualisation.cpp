@@ -15,7 +15,7 @@ void Visualisation::GenerateSprite(std::string d, std::string i, int w, int h, b
 	m_sprites[i] = std::make_shared<Sprite>(aw, ah, a, d, w, h, t);
 }
 
-void Visualisation::ClearToColour(HAPI_TColour& c, int w, int h)
+void Visualisation::ClearToColour(const HAPI_TColour& c, int w, int h)
 {
 	if (c.red == c.green && c.red == c.blue) {
 		memset(m_screen, c.red, (size_t)w * (size_t)h * 4);

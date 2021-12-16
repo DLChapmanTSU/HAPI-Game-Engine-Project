@@ -9,6 +9,7 @@ class CharacterObject;
 class Visualisation;
 class Vector3;
 class Map;
+class DoorObject;
 
 class World {
 private:
@@ -24,6 +25,7 @@ public:
 	World();
 	void Run();
 	void SpawnBullet(Vector3& p, Vector3& v);
+	void MoveRoom(Object& d);
 private:
 	void MasterRender(Visualisation& v, float s);
 };
