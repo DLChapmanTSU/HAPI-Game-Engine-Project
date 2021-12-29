@@ -105,3 +105,24 @@ void Map::GenerateMap()
 		std::cout << std::endl;
 	}
 }
+
+void Map::StepRoom(RoomDirection d)
+{
+	switch (d)
+	{
+	case RoomDirection::E_UP:
+		m_currentRoomY--;
+		break;
+	case RoomDirection::E_DOWN:
+		m_currentRoomY++;
+		break;
+	case RoomDirection::E_LEFT:
+		m_currentRoomX--;
+		break;
+	case RoomDirection::E_RIGHT:
+		m_currentRoomX++;
+		break;
+	default:
+		break;
+	}
+}

@@ -78,3 +78,10 @@ void Vector3::Lerp(Vector3& a, Vector3& b, float s)
 	m_y = lerpResult.m_y;
 	m_z = lerpResult.m_z;
 }
+
+float Vector3::Distance(Vector3& a, Vector3& b)
+{
+	Vector3 aToB = b - a;
+	float dist = std::sqrt((aToB.m_x * aToB.m_x) + (aToB.m_y * aToB.m_y) + (aToB.m_z * aToB.m_z));
+	return dist;
+}

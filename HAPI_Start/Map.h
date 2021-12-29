@@ -20,4 +20,5 @@ public:
 	Map();
 	void GenerateMap();
 	Room& GetCurrentRoom() { return m_rooms[m_currentRoomY][m_currentRoomX]; };
+	void StepRoom(RoomDirection d);
 };

@@ -16,6 +16,7 @@ public:
 	void Normalize();
 	void Invert();
 	void Lerp(Vector3& a, Vector3& b, float s);
+	float Distance(Vector3& a, Vector3& b);
 
 	friend Vector3 operator+(Vector3& v1, Vector3& v2);
 	friend Vector3 operator*(Vector3& v, float n);

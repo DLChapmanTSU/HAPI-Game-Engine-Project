@@ -102,6 +102,8 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 		Rectangle otherHitbox((int)object->GetPosition()->GetX(), (int)object->GetPosition()->GetX() + object->GetHitbox().first, (int)object->GetPosition()->GetY(), (int)object->GetPosition()->GetY() + object->GetHitbox().second);
 
 		if (myHitbox.IsOverlap(otherHitbox) == true) {
+
+
 			switch (object->GetTag())
 			{
 			case ObjectTag::E_FRIENDLY:
@@ -111,6 +113,9 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 			case ObjectTag::E_NEUTRAL:
 				break;
 			case ObjectTag::E_DOOR:
+				//std::shared_ptr<Object> door = object;
+				//door = std::dynamic_pointer_cast<DoorObject>(door);
+				//w.MoveRoom(std::make_shared<DoorObject>(std::dynamic_pointer_cast<DoorObject>(object)));
 				break;
 			default:
 				break;

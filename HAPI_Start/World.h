@@ -11,6 +11,8 @@ class Vector3;
 class Map;
 class DoorObject;
 
+enum class DoorDirection;
+
 class World {
 private:
 	std::vector<std::shared_ptr<Object>> m_worldObjects;
@@ -25,7 +27,7 @@ public:
 	World();
 	void Run();
 	void SpawnBullet(Vector3& p, Vector3& v);
-	void MoveRoom(Object& d);
+	void MoveRoom(DoorDirection& d);
 private:
 	void MasterRender(Visualisation& v, float s);
 };

@@ -6,6 +6,8 @@
 #include "PlayerObject.h"
 #include "BulletObject.h"
 #include "WallObject.h"
+#include "EnvironmentObject.h"
+#include "DoorObject.h"
 #include "Map.h"
 #include "Room.h"
 
@@ -20,6 +22,11 @@ World::World()
 {
 	//Create Player
 	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(64, 64), "Player", 301.0f, 301.0f, 0.0f, 0, ObjectTag::E_FRIENDLY, true);
+	//Create Doors
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_UP, std::pair<int, int>(64, 64), "Door", 480.0f, 32.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_DOWN, std::pair<int, int>(64, 64), "Door", 480.0f, 672.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_LEFT, std::pair<int, int>(64, 64), "Door", 32.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_RIGHT, std::pair<int, int>(64, 64), "Door", 928.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
 	//Create world objects for game
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f, 4));
@@ -67,6 +74,7 @@ void World::Run()
 	vis.GenerateSprite("Data\\shapeTest.png", "Test", 64, 64, true, 256, 64, true);
 	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false, 256, 256, false);
 	vis.GenerateSprite("Data\\Bullet.png", "Bullet", 32, 32, true, 32, 32, false);
+	vis.GenerateSprite("Data\\Door.png", "Door", 64, 64, true, 64, 64, false);
 
 	HAPI.SetShowFPS(true);
 	HAPI.LimitFrameRate(60);
@@ -98,6 +106,13 @@ void World::Run()
 		//Check collisions between each object
 		m_playerObject->CheckCollision(m_worldObjects, m_playerObject, *this);
 
+		for (size_t i = 0; i < 4; i++)
+		{
+			if (m_worldObjects[i]->GetIsActive() == true) {
+				m_worldObjects[i]->CheckCollision(m_worldObjects, m_playerObject, *this);
+			}
+		}
+
 		m_currentTime = HAPI.GetTime();
 
 		if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
@@ -108,6 +123,25 @@ void World::Run()
 					o->Update(*this);
 				}
 			}
+
+			for (std::shared_ptr<Object> o : m_worldObjects) {
+				if (o->GetIsActive() == true) {
+					o->Update(*this);
+				}
+			}
+
+			/*if (m_map->GetCurrentRoom().HasUpDoor() == true) {
+
+			}
+			else if (m_map->GetCurrentRoom().HasDownDoor() == true) {
+
+			}
+			else if (m_map->GetCurrentRoom().HasLeftDoor() == true) {
+
+			}
+			else if (m_map->GetCurrentRoom().HasRightDoor() == true) {
+
+			}*/
 		}
 
 		DWORD timeElapsed = m_currentTime - m_lastUpdateTime;
@@ -133,8 +167,66 @@ void World::SpawnBullet(Vector3& p, Vector3& v)
 	}
 }
 
-void World::MoveRoom(Object& d)
+void World::MoveRoom(DoorDirection& d)
 {
+	std::cout << "Door Hit" << std::endl;
+	Vector3 playerOffset = *m_playerObject->GetPosition();
+
+	switch (d)
+	{
+	case DoorDirection::E_UP:
+		m_map->StepRoom(RoomDirection::E_UP);
+		playerOffset = *m_worldObjects[1]->GetPosition() + Vector3(0.0f, -96.0f, 0.0f);
+		m_playerObject->SetPosition(playerOffset);
+		break;
+	case DoorDirection::E_DOWN:
+		m_map->StepRoom(RoomDirection::E_DOWN);
+		playerOffset = *m_worldObjects[0]->GetPosition() + Vector3(0.0f, 96.0f, 0.0f);
+		m_playerObject->SetPosition(playerOffset);
+		break;
+	case DoorDirection::E_LEFT:
+		m_map->StepRoom(RoomDirection::E_LEFT);
+		playerOffset = *m_worldObjects[3]->GetPosition() + Vector3(-96.0f, 0.0f, 0.0f);
+		m_playerObject->SetPosition(playerOffset);
+		break;
+	case DoorDirection::E_RIGHT:
+		m_map->StepRoom(RoomDirection::E_RIGHT);
+		playerOffset = *m_worldObjects[2]->GetPosition() + Vector3(96.0f, 0.0f, 0.0f);
+		m_playerObject->SetPosition(playerOffset);
+		break;
+	default:
+		break;
+	}
+
+	std::cout << "X: " << m_playerObject->GetPosition()->GetX() << " Y: " << m_playerObject->GetPosition()->GetY() << std::endl;
+
+	if (m_map->GetCurrentRoom().HasUpDoor() == true) {
+		m_worldObjects[0]->SetActive(true);
+	}
+	else {
+		m_worldObjects[0]->SetActive(false);
+	}
+
+	if (m_map->GetCurrentRoom().HasDownDoor() == true) {
+		m_worldObjects[1]->SetActive(true);
+	}
+	else {
+		m_worldObjects[1]->SetActive(false);
+	}
+
+	if (m_map->GetCurrentRoom().HasLeftDoor() == true) {
+		m_worldObjects[2]->SetActive(true);
+	}
+	else {
+		m_worldObjects[2]->SetActive(false);
+	}
+
+	if (m_map->GetCurrentRoom().HasRightDoor() == true) {
+		m_worldObjects[3]->SetActive(true);
+	}
+	else {
+		m_worldObjects[3]->SetActive(false);
+	}
 }
 
 void World::MasterRender(Visualisation& v, float s)
