@@ -80,3 +80,16 @@ bool Object::Render(Visualisation& v, float s)
 
 	return true;
 }
+
+void Object::TakeDamage(unsigned int d)
+{
+	if (m_tag == ObjectTag::E_DOOR) {
+		return;
+	}
+
+	m_health -= d;
+
+	if (m_health <= 0) {
+		m_isActive = false;
+	}
+}

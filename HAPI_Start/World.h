@@ -5,19 +5,22 @@
 using namespace HAPISPACE;
 
 class Object;
-class CharacterObject;
+class PlayerObject;
 class Visualisation;
 class Vector3;
 class Map;
 class DoorObject;
+class EnemyObject;
 
 enum class DoorDirection;
+enum class ObjectTag;
 
 class World {
 private:
 	std::vector<std::shared_ptr<Object>> m_worldObjects;
-	std::shared_ptr<CharacterObject> m_playerObject;
+	std::shared_ptr<PlayerObject> m_playerObject;
 	std::vector<std::shared_ptr<Object>> m_bulletPool;
+	std::vector<std::shared_ptr<EnemyObject>> m_enemyPool;
 	//std::vector<std::shared_ptr<Object>> m_activeBulletPool;
 	DWORD m_currentTime;
 	DWORD m_lastUpdateTime;
@@ -26,8 +29,12 @@ private:
 public:
 	World();
 	void Run();
-	void SpawnBullet(Vector3& p, Vector3& v);
+	void SpawnBullet(Vector3& p, Vector3& v, ObjectTag& t);
 	void MoveRoom(DoorDirection& d);
+	const Vector3& GetEnemyPosition(size_t i);
+	void SetAIVelocity(size_t i, Vector3& v);
+	const Vector3& GetPlayerPosition();
 private:
 	void MasterRender(Visualisation& v, float s);
+	bool CheckAllEnemiesDead();
 };

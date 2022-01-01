@@ -47,7 +47,7 @@ void PlayerObject::Update(World& w)
 
 		if (conData.digitalButtons[HK_DIGITAL_X] == true && (m_currentTime - m_shotTime) >= m_shotCooldown) {
 			std::cout << "X: " << target.GetX() << " Y: " << target.GetY() << std::endl;
-			w.SpawnBullet(*m_position, target);
+			w.SpawnBullet(*m_position, target, m_tag);
 			m_shotTime = HAPI.GetTime();
 			std::cout << "PEW" << std::endl;
 		}
@@ -75,7 +75,7 @@ void PlayerObject::Update(World& w)
 		target.Normalize();
 
 		if (mouseData.leftButtonDown && (m_currentTime - m_shotTime) >= m_shotCooldown) {
-			w.SpawnBullet(*m_position, target);
+			w.SpawnBullet(*m_position, target, m_tag);
 			m_shotTime = HAPI.GetTime();
 		}
 	}
@@ -88,7 +88,7 @@ void PlayerObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 }
 
-void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p, World& w)
+void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
 {
 	//Checks for any collisions using rectangles
 	//Will handle behaviour such as snapping back when running into a wall
@@ -102,13 +102,18 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 		Rectangle otherHitbox((int)object->GetPosition()->GetX(), (int)object->GetPosition()->GetX() + object->GetHitbox().first, (int)object->GetPosition()->GetY(), (int)object->GetPosition()->GetY() + object->GetHitbox().second);
 
 		if (myHitbox.IsOverlap(otherHitbox) == true) {
+			/*std::shared_ptr<CharacterObject> enemy;
 
+			if (object->GetTag() == ObjectTag::E_ENEMY) {
+				enemy = std::make_shared<CharacterObject>(std::dynamic_pointer_cast<CharacterObject>(object));
+			}*/
 
 			switch (object->GetTag())
 			{
 			case ObjectTag::E_FRIENDLY:
 				break;
 			case ObjectTag::E_ENEMY:
+				//enemy->TakeDamage(1);
 				break;
 			case ObjectTag::E_NEUTRAL:
 				break;

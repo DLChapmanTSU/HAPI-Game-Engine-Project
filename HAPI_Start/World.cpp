@@ -2,7 +2,6 @@
 #include "Object.h"
 #include "Vector3.h"
 #include "Visualisation.h"
-#include "CharacterObject.h"
 #include "PlayerObject.h"
 #include "BulletObject.h"
 #include "WallObject.h"
@@ -10,6 +9,8 @@
 #include "DoorObject.h"
 #include "Map.h"
 #include "Room.h"
+#include "EnemyObject.h"
+#include "RoamingEnemyObject.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -28,7 +29,7 @@ World::World()
 	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_LEFT, std::pair<int, int>(64, 64), "Door", 32.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
 	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_RIGHT, std::pair<int, int>(64, 64), "Door", 928.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
 	//Create world objects for game
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f, 4));
+	/*m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 500.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 290.0f, 180.0f, 0.0f, 4));
@@ -36,7 +37,7 @@ World::World()
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));*/
 
 	for (size_t i = 0; i < 100; i++)
 	{
@@ -54,6 +55,8 @@ World::World()
 
 	m_map = std::make_shared<Map>(myMap);
 	//m_map->GenerateMap();
+
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "Test", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, true));
 }
 
 void World::Run()
@@ -104,12 +107,20 @@ void World::Run()
 		
 
 		//Check collisions between each object
-		m_playerObject->CheckCollision(m_worldObjects, m_playerObject, *this);
+		m_playerObject->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
 
-		for (size_t i = 0; i < 4; i++)
-		{
-			if (m_worldObjects[i]->GetIsActive() == true) {
-				m_worldObjects[i]->CheckCollision(m_worldObjects, m_playerObject, *this);
+		if (CheckAllEnemiesDead() == true) {
+			for (size_t i = 0; i < 4; i++)
+			{
+				if (m_worldObjects[i]->GetIsActive() == true) {
+					m_worldObjects[i]->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
+				}
+			}
+		}
+
+		for (std::shared_ptr<Object> b : m_bulletPool) {
+			if (b->GetIsActive() == true) {
+				b->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
 			}
 		}
 
@@ -127,6 +138,12 @@ void World::Run()
 			for (std::shared_ptr<Object> o : m_worldObjects) {
 				if (o->GetIsActive() == true) {
 					o->Update(*this);
+				}
+			}
+
+			for (std::shared_ptr<EnemyObject> e : m_enemyPool){
+				if (e->GetIsActive() == true) {
+					e->Update(*this);
 				}
 			}
 
@@ -155,10 +172,10 @@ void World::Run()
 	}
 }
 
-void World::SpawnBullet(Vector3& p, Vector3& v)
+void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag& t)
 {
 	for (std::shared_ptr<Object> b : m_bulletPool) {
-		if (b->GetIsActive() == false) {
+		if (b->GetIsActive() == false && b->GetTag() == t) {
 			b->SetPosition(p);
 			b->SetVelocity(v);
 			b->SetActive(true);
@@ -169,6 +186,9 @@ void World::SpawnBullet(Vector3& p, Vector3& v)
 
 void World::MoveRoom(DoorDirection& d)
 {
+	if (CheckAllEnemiesDead() == false) {
+		return;
+	}
 	std::cout << "Door Hit" << std::endl;
 	Vector3 playerOffset = *m_playerObject->GetPosition();
 
@@ -229,6 +249,30 @@ void World::MoveRoom(DoorDirection& d)
 	}
 }
 
+const Vector3& World::GetEnemyPosition(size_t i)
+{
+	if (i > m_worldObjects.size()) {
+		HAPI.UserMessage("Tried to fetch AI position out of range", "ERROR");
+		HAPI.Close();
+	}
+	return *m_worldObjects[i + 4]->GetPosition();
+}
+
+void World::SetAIVelocity(size_t i, Vector3& v)
+{
+	if (i > m_worldObjects.size()) {
+		HAPI.UserMessage("Tried to fetch AI position out of range", "ERROR");
+		HAPI.Close();
+	}
+
+	m_worldObjects[i + 4]->SetVelocity(v);
+}
+
+const Vector3& World::GetPlayerPosition()
+{
+	return *m_playerObject->GetPosition();
+}
+
 void World::MasterRender(Visualisation& v, float s)
 {
 	//Updates animation if set time has elapsed
@@ -265,4 +309,19 @@ void World::MasterRender(Visualisation& v, float s)
 	for (std::shared_ptr<Object> o : m_bulletPool) {
 		o->Render(v, s);
 	}
+
+	for (std::shared_ptr<EnemyObject> o : m_enemyPool) {
+		o->Render(v, s);
+	}
+}
+
+bool World::CheckAllEnemiesDead()
+{
+	bool allActive{ true };
+
+	for (std::shared_ptr<EnemyObject> o : m_enemyPool) {
+		allActive = allActive && o->GetIsActive();
+	}
+
+	return !allActive;
 }

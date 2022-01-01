@@ -6,8 +6,9 @@ using namespace HAPISPACE;
 
 class Vector3;
 class Visualisation;
-class CharacterObject;
+class PlayerObject;
 class World;
+class EnemyObject;
 
 enum class ObjectTag {
 	E_FRIENDLY,
@@ -27,6 +28,7 @@ protected:
 	std::string m_spriteKey;
 	bool m_isActive{ true };
 	ObjectTag m_tag;
+	int m_health{ 10 };
 public:
 	Object(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_NEUTRAL, bool a = true);
 	void SetPosition(const Vector3& v);
@@ -43,6 +45,7 @@ public:
 	void SetActive(bool a);
 	void SetVelocity(const Vector3& v);
 	bool Render(Visualisation& v, float s);
+	void TakeDamage(unsigned int d);
 	virtual void Update(World& w) = 0;
-	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p, World& w) = 0;
+	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w) = 0;
 };

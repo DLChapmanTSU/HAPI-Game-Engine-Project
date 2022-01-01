@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AI.cpp" />
     <ClCompile Include="BulletObject.cpp" />
     <ClCompile Include="CharacterObject.cpp" />
     <ClCompile Include="DoorObject.cpp" />
@@ -32,6 +33,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlayerObject.cpp" />
     <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="RoamingEnemyObject.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Vector3.cpp" />
@@ -40,14 +42,17 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AI.h" />
     <ClInclude Include="BulletObject.h" />
     <ClInclude Include="CharacterObject.h" />
     <ClInclude Include="DoorObject.h" />
+    <ClInclude Include="EnemyObject.h" />
     <ClInclude Include="EnvironmentObject.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PlayerObject.h" />
     <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="RoamingEnemyObject.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Vector3.h" />

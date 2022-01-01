@@ -63,6 +63,12 @@
     <ClCompile Include="DoorObject.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="AI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RoamingEnemyObject.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector3.h">
@@ -81,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterObject.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="PlayerObject.h">
@@ -105,6 +108,18 @@
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="EnvironmentObject.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="AI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyObject.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="RoamingEnemyObject.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterObject.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>

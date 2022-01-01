@@ -8,13 +8,14 @@ DoorObject::DoorObject(DoorDirection d, std::pair<int, int> h, std::string k, fl
 {
 	m_tag = ObjectTag::E_DOOR;
 	m_direction = d;
+	m_health = 1;
 }
 
 void DoorObject::Update(World& w)
 {
 }
 
-void DoorObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<CharacterObject>& p, World& w)
+void DoorObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
 {
 	Rectangle myHitbox((int)m_position->GetX(), (int)m_position->GetX() + m_hitboxDimensions.first, (int)m_position->GetY(), (int)m_position->GetY() + m_hitboxDimensions.second);
 
