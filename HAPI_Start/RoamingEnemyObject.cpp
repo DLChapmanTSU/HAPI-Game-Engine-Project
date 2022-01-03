@@ -19,9 +19,13 @@ void RoamingEnemyObject::Update(World& w)
 	/*Vector3 targetVelocity = m_targetPosition;
 	targetVelocity = targetVelocity - *m_position;*/
 
+	
+
 	if (m_health <= 0) {
 		return;
 	}
+
+	HAPISPACE::DWORD currentTime = HAPI.GetTime();
 
 	UpdateState(w.GetPlayerPosition());
 
@@ -31,14 +35,20 @@ void RoamingEnemyObject::Update(World& w)
 		return;
 		break;
 	case State::E_ATTACKING:
-		w.SpawnBullet(*m_position, Vector3(1.0f, 0.0f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(-1.0f, 0.0f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(0.0f, 1.0f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(0.0f, -1.0f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(0.5f, 0.5f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(-0.5f, 0.5f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(0.5f, -0.5f, 0.0f), m_tag);
-		w.SpawnBullet(*m_position, Vector3(-0.5f, -0.5f, 0.0f), m_tag);
+		if (currentTime - m_shotTime > (DWORD)1000) {
+			w.SpawnBullet(*m_position, Vector3(1.0f, 0.0f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(-1.0f, 0.0f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(0.0f, 1.0f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(0.0f, -1.0f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(0.5f, 0.5f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(-0.5f, 0.5f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(0.5f, -0.5f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(-0.5f, -0.5f, 0.0f), m_tag);
+
+			m_shotTime = HAPI.GetTime();
+		}
+
+		*m_velocity = Vector3(0.0f, 0.0f, 0.0f);
 		break;
 	case State::E_PATROLLING:
 		*m_velocity = m_targetPositions[m_targetIndex] - *m_position;

@@ -23,6 +23,7 @@ private:
 	bool m_down{ false };
 	bool m_left{ false };
 	bool m_right{ false };
+	bool m_isCleared{ false };
 	//size_t m_index;
 	std::vector<Vector3> m_spawnPoints;
 	HAPI_TColour m_roomColour;
@@ -37,4 +38,6 @@ public:
 	bool HasDownDoor() { return m_down; };
 	bool HasLeftDoor() { return m_left; };
 	bool HasRightDoor() { return m_right; };
+	bool GetIsCleared() { return m_isCleared; };
+	void SetIsCleared(bool c);
 };

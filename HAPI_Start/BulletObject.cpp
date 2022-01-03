@@ -44,7 +44,10 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 		if (myHitbox.IsOverlap(otherHitbox) == true && p->GetIsActive() == true) {
 			//std::cout << "Character Hit" << std::endl;
 			m_isActive = false;
-			p->TakeDamage(1);
+			bool isDead = p->TakeDamage(1);
+			if (isDead == true) {
+				w.SpawnExplosion(*p->GetPosition());
+			}
 			//p->TakeDamage(1);
 		}
 	}
@@ -55,7 +58,10 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 			if (myHitbox.IsOverlap(otherHitbox) == true && enemy->GetIsActive() == true) {
 				//std::cout << "Character Hit" << std::endl;
 				m_isActive = false;
-				enemy->TakeDamage(1);
+				bool isDead = enemy->TakeDamage(1);
+				if (isDead == true) {
+					w.SpawnExplosion(*enemy->GetPosition());
+				}
 				//p->TakeDamage(1);
 			}
 		}

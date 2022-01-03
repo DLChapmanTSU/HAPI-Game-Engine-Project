@@ -81,15 +81,18 @@ bool Object::Render(Visualisation& v, float s)
 	return true;
 }
 
-void Object::TakeDamage(unsigned int d)
+bool Object::TakeDamage(unsigned int d)
 {
 	if (m_tag == ObjectTag::E_DOOR) {
-		return;
+		return false;
 	}
 
 	m_health -= d;
 
 	if (m_health <= 0) {
 		m_isActive = false;
+		return true;
 	}
+
+	return false;
 }

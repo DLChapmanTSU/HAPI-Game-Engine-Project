@@ -20,9 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AI.cpp" />
+    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BulletObject.cpp" />
     <ClCompile Include="CharacterObject.cpp" />
+    <ClCompile Include="ChasingEnemyObject.cpp" />
     <ClCompile Include="DoorObject.cpp" />
+    <ClCompile Include="ExplosionObject.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -35,6 +38,7 @@
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="RoamingEnemyObject.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Visualisation.cpp" />
@@ -43,17 +47,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI.h" />
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="BulletObject.h" />
     <ClInclude Include="CharacterObject.h" />
+    <ClInclude Include="ChasingEnemyObject.h" />
     <ClInclude Include="DoorObject.h" />
     <ClInclude Include="EnemyObject.h" />
     <ClInclude Include="EnvironmentObject.h" />
+    <ClInclude Include="ExplosionObject.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PlayerObject.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="RoamingEnemyObject.h" />
     <ClInclude Include="Room.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Visualisation.h" />

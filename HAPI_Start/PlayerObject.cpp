@@ -4,8 +4,17 @@
 #include "Visualisation.h"
 #include "World.h"
 
+PlayerObject::PlayerObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : Object(h, k, x, y, z, m, t, a)
+{
+	m_moveSpeed = 10.0f;
+}
+
 void PlayerObject::Update(World& w)
 {
+	if (m_isActive == false) {
+		return;
+	}
+
 	m_currentTime = HAPI.GetTime();
 
 	//Checks user keyboard inputs

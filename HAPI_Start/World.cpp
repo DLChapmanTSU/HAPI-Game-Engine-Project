@@ -11,6 +11,9 @@
 #include "Room.h"
 #include "EnemyObject.h"
 #include "RoamingEnemyObject.h"
+#include "ChasingEnemyObject.h"
+#include "ExplosionObject.h"
+#include "Audio.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -45,6 +48,11 @@ World::World()
 		m_bulletPool.push_back(std::make_shared<BulletObject>(std::pair<int, int>(32, 32), "Bullet", 0.0f, 0.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	}
 
+	for (size_t i = 0; i < 20; i++)
+	{
+		m_explosionPool.push_back(std::make_shared<ExplosionObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4, ObjectTag::E_NEUTRAL, false));
+	}
+
 	m_currentTime = HAPI.GetTime();
 	m_lastUpdateTime = HAPI.GetTime();
 	m_lastAnimationTime = HAPI.GetTime();
@@ -56,7 +64,23 @@ World::World()
 	m_map = std::make_shared<Map>(myMap);
 	//m_map->GenerateMap();
 
-	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "Test", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, true));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_audio = std::make_shared<Audio>(Audio());
 }
 
 void World::Run()
@@ -78,9 +102,18 @@ void World::Run()
 	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false, 256, 256, false);
 	vis.GenerateSprite("Data\\Bullet.png", "Bullet", 32, 32, true, 32, 32, false);
 	vis.GenerateSprite("Data\\Door.png", "Door", 64, 64, true, 64, 64, false);
+	vis.GenerateSprite("Data\\RoamingEnemy.png", "RoamingEnemy", 64, 64, true, 64, 64, false);
+	vis.GenerateSprite("Data\\ChasingEnemy.png", "ChasingEnemy", 64, 64, true, 64, 64, false);
+
+	//Audio aud;
+	//m_audio = aud;
+	m_audio->LoadSound("Data\\Audio\\shoot.wav", "Shoot", false, 0.0f, 1.0f, 0.1f);
+	m_audio->LoadSound("Data\\Audio\\explosion.wav", "Explosion", false, 0.0f, 1.0f, 1.0f);
 
 	HAPI.SetShowFPS(true);
 	HAPI.LimitFrameRate(60);
+
+	SpawnEnemies();
 
 
 
@@ -147,6 +180,12 @@ void World::Run()
 				}
 			}
 
+			for (std::shared_ptr<Object> e : m_explosionPool) {
+				if (e->GetIsActive() == true) {
+					e->Update(*this);
+				}
+			}
+
 			/*if (m_map->GetCurrentRoom().HasUpDoor() == true) {
 
 			}
@@ -179,6 +218,19 @@ void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag& t)
 			b->SetPosition(p);
 			b->SetVelocity(v);
 			b->SetActive(true);
+			m_audio->PlaySound("Shoot");
+			break;
+		}
+	}
+}
+
+void World::SpawnExplosion(const Vector3& p)
+{
+	for (std::shared_ptr<Object> e : m_explosionPool) {
+		if (e->GetIsActive() == false) {
+			e->SetPosition(p);
+			e->SetActive(true);
+			m_audio->PlaySound("Explosion");
 			break;
 		}
 	}
@@ -191,6 +243,8 @@ void World::MoveRoom(DoorDirection& d)
 	}
 	std::cout << "Door Hit" << std::endl;
 	Vector3 playerOffset = *m_playerObject->GetPosition();
+
+	m_map->GetCurrentRoom().SetIsCleared(true);
 
 	switch (d)
 	{
@@ -247,6 +301,10 @@ void World::MoveRoom(DoorDirection& d)
 	else {
 		m_worldObjects[3]->SetActive(false);
 	}
+
+	if (m_map->GetCurrentRoom().GetIsCleared() == false) {
+		SpawnEnemies();
+	}
 }
 
 const Vector3& World::GetEnemyPosition(size_t i)
@@ -283,6 +341,10 @@ void World::MasterRender(Visualisation& v, float s)
 			o->SetCurrentFrame(o->GetCurrentFrame() + 1);
 		}
 
+		for (std::shared_ptr<Object> e : m_explosionPool) {
+			e->SetCurrentFrame(e->GetCurrentFrame() + 1);
+		}
+
 		m_lastAnimationTime = HAPI.GetTime();
 		//std::cout << "Yes Animation" << std::endl;
 	}
@@ -313,15 +375,42 @@ void World::MasterRender(Visualisation& v, float s)
 	for (std::shared_ptr<EnemyObject> o : m_enemyPool) {
 		o->Render(v, s);
 	}
+
+	for (std::shared_ptr<Object> e : m_explosionPool) {
+		e->Render(v, s);
+	}
 }
 
 bool World::CheckAllEnemiesDead()
 {
-	bool allActive{ true };
+	bool allDead{ true };
 
 	for (std::shared_ptr<EnemyObject> o : m_enemyPool) {
-		allActive = allActive && o->GetIsActive();
+		if (o->GetIsActive() == true) {
+			allDead = false;
+			break;
+		}
 	}
 
-	return !allActive;
+	return allDead;
+}
+
+void World::SpawnEnemies()
+{
+	std::vector<Vector3> points = m_map->GetCurrentRoom().GetSpawnPoints();
+
+	int numberToSpawn = std::rand() % points.size();
+
+	for (size_t i = 0; i <= numberToSpawn; i++)
+	{
+		int rng = std::rand() % m_enemyPool.size();
+
+		if (m_enemyPool[rng]->GetIsActive() == true) {
+			i--;
+		}
+		else {
+			m_enemyPool[rng]->SetActive(true);
+			m_enemyPool[rng]->SetPosition(points[i]);
+		}
+	}
 }

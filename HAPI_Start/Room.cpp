@@ -16,3 +16,8 @@ bool Room::IsReachable()
 {
 	return (m_up || m_down || m_left || m_right);
 }
+
+void Room::SetIsCleared(bool c)
+{
+	m_isCleared = c;
+}
