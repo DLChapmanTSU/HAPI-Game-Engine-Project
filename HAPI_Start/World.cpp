@@ -14,6 +14,7 @@
 #include "ChasingEnemyObject.h"
 #include "ExplosionObject.h"
 #include "Audio.h"
+#include "StatBar.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -39,8 +40,8 @@ World::World()
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 750.0f, 100.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));*/
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));*/
+	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
 
 	for (size_t i = 0; i < 100; i++)
 	{
@@ -81,6 +82,8 @@ World::World()
 	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_audio = std::make_shared<Audio>(Audio());
+
+	m_playerHealthBar = std::make_shared<StatBar>(Vector3(10.0f, 738.0f, 0.0f), m_playerObject->GetHealth(), HAPI_TColour::RED);
 }
 
 void World::Run()
@@ -113,7 +116,7 @@ void World::Run()
 	HAPI.SetShowFPS(true);
 	HAPI.LimitFrameRate(60);
 
-	SpawnEnemies();
+	//SpawnEnemies();
 
 
 
@@ -122,7 +125,72 @@ void World::Run()
 		HAPI_TColour bgColour(10, 56, 33, 255);
 		vis.ClearToColour(m_map->GetCurrentRoom().GetColour(), 1024, 768);
 
-		
+		if (m_playerObject->GetHealth() <= 0) {
+			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Game Over", 100);
+		}
+		else {
+			m_playerObject->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
+
+			if (CheckAllEnemiesDead() == true) {
+				for (size_t i = 0; i < 4; i++)
+				{
+					if (m_worldObjects[i]->GetIsActive() == true) {
+						m_worldObjects[i]->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
+					}
+				}
+			}
+
+			for (std::shared_ptr<Object> b : m_bulletPool) {
+				if (b->GetIsActive() == true) {
+					b->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
+				}
+			}
+
+			m_currentTime = HAPI.GetTime();
+
+			if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
+				m_lastUpdateTime = HAPI.GetTime();
+				m_playerObject->Update(*this);
+				for (std::shared_ptr<Object> o : m_bulletPool) {
+					if (o->GetIsActive() == true) {
+						o->Update(*this);
+					}
+				}
+
+				for (std::shared_ptr<Object> o : m_worldObjects) {
+					if (o->GetIsActive() == true) {
+						o->Update(*this);
+					}
+				}
+
+				for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
+					if (e->GetIsActive() == true) {
+						e->Update(*this);
+					}
+				}
+
+				for (std::shared_ptr<Object> e : m_explosionPool) {
+					if (e->GetIsActive() == true) {
+						e->Update(*this);
+					}
+				}
+
+				m_playerHealthBar->SetValue(m_playerObject->GetHealth());
+
+				/*if (m_map->GetCurrentRoom().HasUpDoor() == true) {
+
+				}
+				else if (m_map->GetCurrentRoom().HasDownDoor() == true) {
+
+				}
+				else if (m_map->GetCurrentRoom().HasLeftDoor() == true) {
+
+				}
+				else if (m_map->GetCurrentRoom().HasRightDoor() == true) {
+
+				}*/
+			}
+		}
 
 		/*if (keyData.scanCode[HK_SPACE]) {
 			for (std::shared_ptr<Object> o : m_bulletPool) {
@@ -140,65 +208,7 @@ void World::Run()
 		
 
 		//Check collisions between each object
-		m_playerObject->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
-
-		if (CheckAllEnemiesDead() == true) {
-			for (size_t i = 0; i < 4; i++)
-			{
-				if (m_worldObjects[i]->GetIsActive() == true) {
-					m_worldObjects[i]->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
-				}
-			}
-		}
-
-		for (std::shared_ptr<Object> b : m_bulletPool) {
-			if (b->GetIsActive() == true) {
-				b->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
-			}
-		}
-
-		m_currentTime = HAPI.GetTime();
-
-		if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
-			m_lastUpdateTime = HAPI.GetTime();
-			m_playerObject->Update(*this);
-			for (std::shared_ptr<Object> o : m_bulletPool) {
-				if (o->GetIsActive() == true) {
-					o->Update(*this);
-				}
-			}
-
-			for (std::shared_ptr<Object> o : m_worldObjects) {
-				if (o->GetIsActive() == true) {
-					o->Update(*this);
-				}
-			}
-
-			for (std::shared_ptr<EnemyObject> e : m_enemyPool){
-				if (e->GetIsActive() == true) {
-					e->Update(*this);
-				}
-			}
-
-			for (std::shared_ptr<Object> e : m_explosionPool) {
-				if (e->GetIsActive() == true) {
-					e->Update(*this);
-				}
-			}
-
-			/*if (m_map->GetCurrentRoom().HasUpDoor() == true) {
-
-			}
-			else if (m_map->GetCurrentRoom().HasDownDoor() == true) {
-
-			}
-			else if (m_map->GetCurrentRoom().HasLeftDoor() == true) {
-
-			}
-			else if (m_map->GetCurrentRoom().HasRightDoor() == true) {
-
-			}*/
-		}
+		
 
 		DWORD timeElapsed = m_currentTime - m_lastUpdateTime;
 
@@ -379,6 +389,9 @@ void World::MasterRender(Visualisation& v, float s)
 	for (std::shared_ptr<Object> e : m_explosionPool) {
 		e->Render(v, s);
 	}
+
+	m_playerHealthBar->Render(v);
+	//v.RenderDefault(Vector3(10.0f, 10.0f, 0.0f), 100, 20, HAPI_TColour::GREEN);
 }
 
 bool World::CheckAllEnemiesDead()

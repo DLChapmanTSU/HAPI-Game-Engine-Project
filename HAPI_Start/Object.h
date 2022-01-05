@@ -42,6 +42,7 @@ public:
 	const std::shared_ptr<Vector3>& GetVelocity() const { return m_velocity; };
 	const ObjectTag GetTag() const { return m_tag; };
 	const bool GetIsActive() const { return m_isActive; };
+	const int GetHealth() const { return m_health; };
 	void SetActive(bool a);
 	void SetVelocity(const Vector3& v);
 	bool Render(Visualisation& v, float s);

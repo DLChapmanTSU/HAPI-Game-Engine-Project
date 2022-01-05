@@ -24,6 +24,7 @@ private:
 	bool m_left{ false };
 	bool m_right{ false };
 	bool m_isCleared{ false };
+	bool m_isBossRoom{ false };
 	//size_t m_index;
 	std::vector<Vector3> m_spawnPoints;
 	HAPI_TColour m_roomColour;
@@ -39,5 +40,6 @@ public:
 	bool HasLeftDoor() { return m_left; };
 	bool HasRightDoor() { return m_right; };
 	bool GetIsCleared() { return m_isCleared; };
+	bool GetIsBossRoom() { return m_isBossRoom; };
 	void SetIsCleared(bool c);
 };

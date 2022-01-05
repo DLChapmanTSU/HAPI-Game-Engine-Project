@@ -43,6 +43,38 @@ bool Visualisation::RenderTexture(const Vector3& p, std::string n, int f)
 	}
 }
 
+void Visualisation::RenderDefault(const Vector3& p, const unsigned int w, const unsigned int h, HAPI_TColour& c)
+{
+	Rectangle screenRect(0, m_screenWidth, 0, m_screenHeight);
+	Rectangle textureRect(0, w, 0, h);
+	textureRect.Translate(p);
+	Rectangle clippedRect = textureRect;
+	clippedRect.Clip(screenRect);
+	//Vector3 invertedP = p;
+	//invertedP.Invert();
+	//clippedRect.Translate(invertedP);
+
+	if (clippedRect.m_right - clippedRect.m_left <= 0 || clippedRect.m_bottom - clippedRect.m_top <= 0) {
+		//std::cout << "Not on screen" << std::endl;
+		return;
+	}
+
+	//Creates pointers to the texture and the first pixel in the screen to render to
+	int screenPositionToPointTo = (int)((std::roundf(p.GetX()) + std::roundf(p.GetY()) * m_screenWidth) * 4.0f);
+	BYTE* screenPointer = m_screen + screenPositionToPointTo;
+
+	for (int i = clippedRect.m_top; i < clippedRect.m_bottom; i++)
+	{
+		for (int j = clippedRect.m_left; j < clippedRect.m_right; j++)
+		{
+			int offset{ ((i * m_screenWidth) + j) * 4 };
+			m_screen[offset] = c.red;
+			m_screen[offset + 1] = c.green;
+			m_screen[offset + 2] = c.blue;
+		}
+	}
+}
+
 void Visualisation::ClearPointers()
 {
 	delete[] m_screen;

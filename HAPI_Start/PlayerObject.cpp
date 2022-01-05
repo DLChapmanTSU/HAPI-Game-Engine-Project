@@ -125,6 +125,19 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 				//enemy->TakeDamage(1);
 				break;
 			case ObjectTag::E_NEUTRAL:
+				SetPosition(*m_position - (*m_velocity * m_moveSpeed));
+				/*if (myHitbox.m_right > otherHitbox.m_left && myHitbox.m_right < otherHitbox.m_right) {
+					SetPosition(*m_position - Vector3(myHitbox.m_right - otherHitbox.m_left, 0.0f, 0.0f));
+				}
+				else if (myHitbox.m_left < otherHitbox.m_right && myHitbox.m_left > otherHitbox.m_left) {
+					SetPosition(*m_position + Vector3(otherHitbox.m_right - myHitbox.m_left, 0.0f, 0.0f));
+				}
+				else if (myHitbox.m_bottom > otherHitbox.m_top && myHitbox.m_bottom < otherHitbox.m_bottom) {
+					SetPosition(*m_position - Vector3(0.0f, myHitbox.m_bottom - otherHitbox.m_top, 0.0f));
+				}
+				else if (myHitbox.m_top < otherHitbox.m_bottom && myHitbox.m_top > otherHitbox.m_top) {
+					SetPosition(*m_position + Vector3(0.0f, otherHitbox.m_bottom - myHitbox.m_top, 0.0f));
+				}*/
 				break;
 			case ObjectTag::E_DOOR:
 				//std::shared_ptr<Object> door = object;

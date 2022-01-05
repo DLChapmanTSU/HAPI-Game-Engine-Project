@@ -19,5 +19,6 @@ public:
 	void GenerateSprite(std::string d, std::string i, int w, int h, bool t, int aw, int ah, bool a);
 	void ClearToColour(const HAPI_TColour& c, int w, int h);
 	bool RenderTexture(const Vector3& p, std::string n, int f);
+	void RenderDefault(const Vector3& p, const unsigned int w, const unsigned int h, HAPI_TColour& c);
 	void ClearPointers();
 };

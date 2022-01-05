@@ -47,6 +47,9 @@ void Map::GenerateMap()
 			if (m_rooms[yRand][xRand].m_up == false && m_rooms[yRand - 1][xRand].IsReachable() == true) {
 				m_rooms[yRand][xRand].m_up = true;
 				m_rooms[yRand - 1][xRand].m_down = true;
+				if (connectionsMade == 9) {
+					m_rooms[yRand][xRand].m_isBossRoom = true;
+				}
 				connectionsMade++;
 			}
 			break;
@@ -58,6 +61,9 @@ void Map::GenerateMap()
 			if (m_rooms[yRand][xRand].m_down == false && m_rooms[yRand + 1][xRand].IsReachable() == true) {
 				m_rooms[yRand][xRand].m_down = true;
 				m_rooms[yRand + 1][xRand].m_up = true;
+				if (connectionsMade == 9) {
+					m_rooms[yRand][xRand].m_isBossRoom = true;
+				}
 				connectionsMade++;
 			}
 			break;
@@ -69,6 +75,9 @@ void Map::GenerateMap()
 			if (m_rooms[yRand][xRand].m_left == false && m_rooms[yRand][xRand - 1].IsReachable() == true) {
 				m_rooms[yRand][xRand].m_left = true;
 				m_rooms[yRand][xRand - 1].m_right = true;
+				if (connectionsMade == 9) {
+					m_rooms[yRand][xRand].m_isBossRoom = true;
+				}
 				connectionsMade++;
 			}
 			break;
@@ -80,6 +89,9 @@ void Map::GenerateMap()
 			if (m_rooms[yRand][xRand].m_right == false && m_rooms[yRand][xRand + 1].IsReachable() == true) {
 				m_rooms[yRand][xRand].m_right = true;
 				m_rooms[yRand][xRand + 1].m_left = true;
+				if (connectionsMade == 9) {
+					m_rooms[yRand][xRand].m_isBossRoom = true;
+				}
 				connectionsMade++;
 			}
 			break;
@@ -95,7 +107,12 @@ void Map::GenerateMap()
 		for (size_t j = 0; j < 5; j++)
 		{
 			if (m_rooms[i][j].IsReachable() == true) {
-				std::cout << "1";
+				if (m_rooms[i][j].m_isBossRoom == true) {
+					std::cout << "B";
+				}
+				else {
+					std::cout << "1";
+				}
 			}
 			else {
 				std::cout << "0";

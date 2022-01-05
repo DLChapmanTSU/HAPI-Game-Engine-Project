@@ -40,6 +40,7 @@
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="StatBar.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Visualisation.cpp" />
     <ClCompile Include="WallObject.cpp" />
@@ -48,6 +49,7 @@
   <ItemGroup>
     <ClInclude Include="AI.h" />
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="BossEnemyObject.h" />
     <ClInclude Include="BulletObject.h" />
     <ClInclude Include="CharacterObject.h" />
     <ClInclude Include="ChasingEnemyObject.h" />
@@ -63,6 +65,7 @@
     <ClInclude Include="Room.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="StatBar.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Visualisation.h" />
     <ClInclude Include="WallObject.h" />

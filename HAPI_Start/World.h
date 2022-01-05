@@ -12,6 +12,7 @@ class Map;
 class DoorObject;
 class EnemyObject;
 class Audio;
+class StatBar;
 
 enum class DoorDirection;
 enum class ObjectTag;
@@ -29,6 +30,7 @@ private:
 	DWORD m_lastAnimationTime;
 	std::shared_ptr<Map> m_map;
 	std::shared_ptr<Audio> m_audio;
+	std::shared_ptr<StatBar> m_playerHealthBar;
 public:
 	World();
 	void Run();
