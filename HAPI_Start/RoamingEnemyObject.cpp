@@ -2,9 +2,9 @@
 #include "World.h"
 #include "PlayerObject.h"
 
-RoamingEnemyObject::RoamingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a)
+RoamingEnemyObject::RoamingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 10)
 {
-	m_health = 10;
+	//m_health = 10;
 
 	m_targetPositions.push_back(Vector3(200.0f, 200.0f, 0.0f));
 	m_targetPositions.push_back(Vector3(824.0f, 200.0f, 0.0f));

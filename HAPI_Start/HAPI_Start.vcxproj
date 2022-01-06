@@ -27,6 +27,7 @@
     <ClCompile Include="CharacterObject.cpp" />
     <ClCompile Include="ChasingEnemyObject.cpp" />
     <ClCompile Include="DoorObject.cpp" />
+    <ClCompile Include="EnemyObject.cpp" />
     <ClCompile Include="ExplosionObject.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

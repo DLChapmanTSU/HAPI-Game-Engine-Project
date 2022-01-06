@@ -2,9 +2,9 @@
 #include "World.h"
 #include "PlayerObject.h"
 
-ChasingEnemyObject::ChasingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a)
+ChasingEnemyObject::ChasingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 5)
 {
-	m_health = 5;
+	//m_health = 5;
 
 	m_targetPositions.push_back(*m_position);
 	m_targetPositions.push_back(*m_position + Vector3(0.0f, 200.0f, 0.0f));

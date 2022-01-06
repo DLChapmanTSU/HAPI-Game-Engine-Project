@@ -28,7 +28,7 @@ protected:
 	std::string m_spriteKey;
 	bool m_isActive{ true };
 	ObjectTag m_tag;
-	int m_health{ 10 };
+	//int m_health{ 10 };
 public:
 	Object(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_NEUTRAL, bool a = true);
 	void SetPosition(const Vector3& v);
@@ -42,11 +42,11 @@ public:
 	const std::shared_ptr<Vector3>& GetVelocity() const { return m_velocity; };
 	const ObjectTag GetTag() const { return m_tag; };
 	const bool GetIsActive() const { return m_isActive; };
-	const int GetHealth() const { return m_health; };
+	//const int GetHealth() const { return m_health; };
 	void SetActive(bool a);
 	void SetVelocity(const Vector3& v);
 	virtual bool Render(Visualisation& v, float s);
-	bool TakeDamage(unsigned int d);
+	//bool TakeDamage(unsigned int d);
 	virtual void Update(World& w) = 0;
 	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w) = 0;
 };

@@ -433,6 +433,7 @@ void World::SpawnEnemies()
 	if (m_map->GetCurrentRoom().GetIsBossRoom() == true) {
 		m_enemyPool[m_enemyPool.size() - 1]->SetActive(true);
 		m_enemyPool[m_enemyPool.size() - 1]->SetPosition(Vector3(472.0f, 344.0f, 0.0f));
+		m_enemyPool[m_enemyPool.size() - 1]->Reset();
 		return;
 	}
 
@@ -448,6 +449,34 @@ void World::SpawnEnemies()
 		else {
 			m_enemyPool[rng]->SetActive(true);
 			m_enemyPool[rng]->SetPosition(points[i]);
+			m_enemyPool[rng]->Reset();
 		}
 	}
+}
+
+void World::ResetWorld()
+{
+	for (std::shared_ptr<Object> b : m_bulletPool) {
+		b->SetActive(false);
+	}
+
+	for (std::shared_ptr<Object> e : m_explosionPool) {
+		e->SetActive(false);
+	}
+
+	for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
+		e->SetActive(false);
+	}
+
+	for (std::shared_ptr<Object> o : m_worldObjects) {
+		if (o->GetTag() == ObjectTag::E_DOOR) {
+			o->SetActive(true);
+		}
+		else {
+			o->SetActive(false);
+		}
+	}
+
+	m_playerObject->SetActive(true);
+	m_playerObject->SetPosition(Vector3(301.0f, 301.0f, 0.0f));
 }

@@ -18,7 +18,7 @@ void BulletObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 
 	m_lifeTime += 0.1f;
-	m_health = 1;
+	//m_health = 1;
 }
 
 void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
@@ -32,7 +32,7 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 
 		if (myHitbox.IsOverlap(otherHitbox) == true && object->GetTag() != m_tag && object->GetIsActive() == true) {
 			//std::cout << "Collision" << std::endl;
-			object->TakeDamage(1);
+			//object->TakeDamage(1);
 			m_isActive = false;
 			return;
 		}
@@ -58,7 +58,7 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 			if (myHitbox.IsOverlap(otherHitbox) == true && enemy->GetIsActive() == true) {
 				//std::cout << "Character Hit" << std::endl;
 				m_isActive = false;
-				bool isDead = enemy->TakeDamage(10);
+				bool isDead = enemy->TakeDamage(1);
 				if (isDead == true) {
 					w.SpawnExplosion(*enemy->GetPosition());
 				}

@@ -18,6 +18,9 @@ void Map::GenerateMap()
 {
 	//m_rooms.clear();
 
+	m_currentRoomX = 2;
+	m_currentRoomY = 2;
+
 	m_rooms[m_currentRoomY][m_currentRoomX].m_up = true;
 	m_rooms[m_currentRoomY][m_currentRoomX].m_down = true;
 	m_rooms[m_currentRoomY][m_currentRoomX].m_left = true;

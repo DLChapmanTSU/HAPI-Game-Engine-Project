@@ -5,9 +5,9 @@
 #include "World.h"
 #include "Visualisation.h"
 
-BossEnemyObject::BossEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a)
+BossEnemyObject::BossEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 50)
 {
-	m_health = 50;
+	//m_health = 50;
 	m_sprayDirection = Vector3(0.0f, 1.0f, 0.0f);
 	m_lastSpray = HAPI.GetTime();
 

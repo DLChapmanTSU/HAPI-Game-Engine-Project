@@ -153,3 +153,15 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 		}
 	}
 }
+
+bool PlayerObject::TakeDamage(unsigned int d)
+{
+	m_health -= d;
+
+	if (m_health <= 0) {
+		m_isActive = false;
+		return true;
+	}
+
+	return false;
+}

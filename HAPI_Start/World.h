@@ -44,4 +44,5 @@ private:
 	void MasterRender(Visualisation& v, float s);
 	bool CheckAllEnemiesDead();
 	void SpawnEnemies();
+	void ResetWorld();
 };

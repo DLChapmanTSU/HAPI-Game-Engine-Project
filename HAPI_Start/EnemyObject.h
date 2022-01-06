@@ -17,10 +17,14 @@ protected:
 	State m_currentState{ State::E_STATIONARY };
 	std::vector<Vector3> m_targetPositions;
 	size_t m_targetIndex{ 0 };
-	int m_health{ 1 };
+	int m_health;
+	int m_maxHealth;
 	HAPISPACE::DWORD m_shotTime{ (HAPISPACE::DWORD)0 };
 public:
-	EnemyObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_ENEMY, bool a = true) : Object(h, k, x, y, z, m, t, a) {};
+	EnemyObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_ENEMY, bool a = true, unsigned int health = 5);
+	bool TakeDamage(unsigned int d);
+	void Reset();
+	//int GetHealth() { return m_health; };
 private:
 	virtual void UpdateState(const Vector3& p) = 0;
 };
