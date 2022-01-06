@@ -12,6 +12,7 @@
 #include "EnemyObject.h"
 #include "RoamingEnemyObject.h"
 #include "ChasingEnemyObject.h"
+#include "BossEnemyObject.h"
 #include "ExplosionObject.h"
 #include "Audio.h"
 #include "StatBar.h"
@@ -41,7 +42,7 @@ World::World()
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f, 4));
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));*/
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
+	//m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
 
 	for (size_t i = 0; i < 100; i++)
 	{
@@ -81,6 +82,7 @@ World::World()
 	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
+	m_enemyPool.push_back(std::make_shared<BossEnemyObject>(std::pair<int, int>(80, 80), "BossEnemy", 300.0f, 100.0f, 0.0f, 16, ObjectTag::E_ENEMY, false));
 	m_audio = std::make_shared<Audio>(Audio());
 
 	m_playerHealthBar = std::make_shared<StatBar>(Vector3(10.0f, 738.0f, 0.0f), m_playerObject->GetHealth(), HAPI_TColour::RED);
@@ -107,6 +109,8 @@ void World::Run()
 	vis.GenerateSprite("Data\\Door.png", "Door", 64, 64, true, 64, 64, false);
 	vis.GenerateSprite("Data\\RoamingEnemy.png", "RoamingEnemy", 64, 64, true, 64, 64, false);
 	vis.GenerateSprite("Data\\ChasingEnemy.png", "ChasingEnemy", 64, 64, true, 64, 64, false);
+	vis.GenerateSprite("Data\\BossEnemy.png", "BossEnemy", 80, 80, true, 1280, 80, true);
+	vis.GenerateSprite("Data\\RocketTarget.png", "Target", 64, 64, true, 64, 64, false);
 
 	//Audio aud;
 	//m_audio = aud;
@@ -116,7 +120,7 @@ void World::Run()
 	HAPI.SetShowFPS(true);
 	HAPI.LimitFrameRate(60);
 
-	//SpawnEnemies();
+	SpawnEnemies();
 
 
 
@@ -128,6 +132,9 @@ void World::Run()
 		if (m_playerObject->GetHealth() <= 0) {
 			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Game Over", 100);
 		}
+		else if (CheckAllEnemiesDead() == true && m_map->GetCurrentRoom().GetIsBossRoom() == true) {
+			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "You Win", 100);
+		}
 		else {
 			m_playerObject->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
 
@@ -136,6 +143,13 @@ void World::Run()
 				{
 					if (m_worldObjects[i]->GetIsActive() == true) {
 						m_worldObjects[i]->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
+					}
+				}
+			}
+			else {
+				for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
+					if (e->GetIsActive() == true) {
+						e->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
 					}
 				}
 			}
@@ -355,6 +369,10 @@ void World::MasterRender(Visualisation& v, float s)
 			e->SetCurrentFrame(e->GetCurrentFrame() + 1);
 		}
 
+		for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
+			e->SetCurrentFrame(e->GetCurrentFrame() + 1);
+		}
+
 		m_lastAnimationTime = HAPI.GetTime();
 		//std::cout << "Yes Animation" << std::endl;
 	}
@@ -412,7 +430,13 @@ void World::SpawnEnemies()
 {
 	std::vector<Vector3> points = m_map->GetCurrentRoom().GetSpawnPoints();
 
-	int numberToSpawn = std::rand() % points.size();
+	if (m_map->GetCurrentRoom().GetIsBossRoom() == true) {
+		m_enemyPool[m_enemyPool.size() - 1]->SetActive(true);
+		m_enemyPool[m_enemyPool.size() - 1]->SetPosition(Vector3(472.0f, 344.0f, 0.0f));
+		return;
+	}
+
+	int numberToSpawn = std::rand() % (points.size() - 1);
 
 	for (size_t i = 0; i <= numberToSpawn; i++)
 	{

@@ -85,3 +85,12 @@ float Vector3::Distance(Vector3& a, Vector3& b)
 	float dist = std::sqrt((aToB.m_x * aToB.m_x) + (aToB.m_y * aToB.m_y) + (aToB.m_z * aToB.m_z));
 	return dist;
 }
+
+void Vector3::Rotate(float a)
+{
+	float newX = (m_x * std::cos(a)) - (m_y * std::sin(a));
+	float newY = (m_x * std::sin(a)) + (m_y * std::cos(a));
+
+	m_x = newX;
+	m_y = newY;
+}

@@ -8,7 +8,7 @@ DoorObject::DoorObject(DoorDirection d, std::pair<int, int> h, std::string k, fl
 {
 	m_tag = ObjectTag::E_DOOR;
 	m_direction = d;
-	m_health = 1;
+	m_health = 99999999;
 }
 
 void DoorObject::Update(World& w)

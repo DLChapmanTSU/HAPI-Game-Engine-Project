@@ -45,7 +45,7 @@ public:
 	const int GetHealth() const { return m_health; };
 	void SetActive(bool a);
 	void SetVelocity(const Vector3& v);
-	bool Render(Visualisation& v, float s);
+	virtual bool Render(Visualisation& v, float s);
 	bool TakeDamage(unsigned int d);
 	virtual void Update(World& w) = 0;
 	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w) = 0;
