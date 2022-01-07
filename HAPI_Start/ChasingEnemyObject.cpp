@@ -2,7 +2,7 @@
 #include "World.h"
 #include "PlayerObject.h"
 
-ChasingEnemyObject::ChasingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 5)
+ChasingEnemyObject::ChasingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 5, 5.0f)
 {
 	//m_health = 5;
 
@@ -31,7 +31,7 @@ void ChasingEnemyObject::Update(World& w)
 		break;
 	case State::E_ATTACKING:
 		if (currentTime - m_shotTime > (DWORD)1000) {
-			w.SpawnBullet(*m_position, playerDirection, m_tag);
+			w.SpawnBullet(*m_position, playerDirection, ObjectTag::E_ENEMY_BULLET);
 
 			m_shotTime = HAPI.GetTime();
 		}
@@ -53,7 +53,7 @@ void ChasingEnemyObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 }
 
-void ChasingEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
+void ChasingEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
 }
 

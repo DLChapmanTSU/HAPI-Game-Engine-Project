@@ -4,9 +4,9 @@
 #include "Visualisation.h"
 #include "World.h"
 
-PlayerObject::PlayerObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : Object(h, k, x, y, z, m, t, a)
+PlayerObject::PlayerObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : Object(h, k, x, y, z, m, t, a, 10.0f)
 {
-	m_moveSpeed = 10.0f;
+	//m_moveSpeed = 10.0f;
 }
 
 void PlayerObject::Update(World& w)
@@ -84,7 +84,7 @@ void PlayerObject::Update(World& w)
 		target.Normalize();
 
 		if (mouseData.leftButtonDown && (m_currentTime - m_shotTime) >= m_shotCooldown) {
-			w.SpawnBullet(*m_position, target, m_tag);
+			w.SpawnBullet(*m_position, target, ObjectTag::E_FRIENDLY_BULLET);
 			m_shotTime = HAPI.GetTime();
 		}
 	}
@@ -97,7 +97,7 @@ void PlayerObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 }
 
-void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
+void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
 	//Checks for any collisions using rectangles
 	//Will handle behaviour such as snapping back when running into a wall

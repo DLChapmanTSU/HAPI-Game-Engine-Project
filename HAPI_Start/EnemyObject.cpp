@@ -1,6 +1,6 @@
 #include "EnemyObject.h"
 
-EnemyObject::EnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a, unsigned int health) : Object(h, k, x, y, z, m, t, a) {
+EnemyObject::EnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a, unsigned int health, float s) : Object(h, k, x, y, z, m, t, a, s) {
 	m_health = health;
 	m_maxHealth = m_health;
 }

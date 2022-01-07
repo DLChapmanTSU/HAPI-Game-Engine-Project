@@ -7,7 +7,7 @@ void ExplosionObject::Update(World& w)
 	}
 }
 
-void ExplosionObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
+void ExplosionObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
 	//No collisions
 }

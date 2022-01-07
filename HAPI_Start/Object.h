@@ -14,7 +14,10 @@ enum class ObjectTag {
 	E_FRIENDLY,
 	E_ENEMY,
 	E_NEUTRAL,
-	E_DOOR
+	E_DOOR,
+	E_FRIENDLY_BULLET,
+	E_ENEMY_BULLET,
+	E_PARTICLE
 };
 
 class Object {
@@ -30,7 +33,7 @@ protected:
 	ObjectTag m_tag;
 	//int m_health{ 10 };
 public:
-	Object(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_NEUTRAL, bool a = true);
+	Object(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_NEUTRAL, bool a = true, float s = 0.0f);
 	void SetPosition(const Vector3& v);
 	const std::shared_ptr<Vector3>& GetPosition() const { return m_position; };
 	void Translate(Vector3& v);
@@ -48,5 +51,5 @@ public:
 	virtual bool Render(Visualisation& v, float s);
 	//bool TakeDamage(unsigned int d);
 	virtual void Update(World& w) = 0;
-	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w) = 0;
+	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w) = 0;
 };

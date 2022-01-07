@@ -21,7 +21,7 @@ protected:
 	int m_maxHealth;
 	HAPISPACE::DWORD m_shotTime{ (HAPISPACE::DWORD)0 };
 public:
-	EnemyObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_ENEMY, bool a = true, unsigned int health = 5);
+	EnemyObject(std::pair<int, int> h, std::string k, float x = 0.0f, float y = 0.0f, float z = 0.0f, int m = 0, ObjectTag t = ObjectTag::E_ENEMY, bool a = true, unsigned int health = 5, float s = 0.0f);
 	bool TakeDamage(unsigned int d);
 	void Reset();
 	//int GetHealth() { return m_health; };

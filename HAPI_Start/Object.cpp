@@ -8,7 +8,7 @@
 
 using namespace HAPISPACE;
 
-Object::Object(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a)
+Object::Object(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a, float s)
 {
 	m_position = std::make_shared<Vector3>(x, y, z);
 	m_velocity = std::make_shared<Vector3>(0.0f, 0.0f, 0.0f);
@@ -17,6 +17,12 @@ Object::Object(std::pair<int, int> h, std::string k, float x, float y, float z, 
 	m_spriteKey = k;
 	m_tag = t;
 	m_isActive = a;
+
+	if (s < 0.0f) {
+		s = 0.0f;
+	}
+
+	m_moveSpeed = s;
 }
 
 void Object::SetPosition(const Vector3& v)
@@ -54,7 +60,7 @@ void Object::SetActive(bool a)
 void Object::SetVelocity(const Vector3& v)
 {
 	Vector3 newVelocity = v;
-	m_velocity = std::make_shared<Vector3>(newVelocity * m_moveSpeed);
+	m_velocity = std::make_shared<Vector3>(newVelocity);
 }
 
 bool Object::Render(Visualisation& v, float s)

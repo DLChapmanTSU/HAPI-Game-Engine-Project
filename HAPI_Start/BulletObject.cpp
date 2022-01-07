@@ -18,10 +18,12 @@ void BulletObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 
 	m_lifeTime += 0.1f;
+
+	//m_moveSpeed = 7.0f;
 	//m_health = 1;
 }
 
-void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
+void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
 	//Checks for any collisions using rectangles
 	//Handles killing itself and damaging characters with a different tag
@@ -30,15 +32,24 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 	for (std::shared_ptr<Object> object : o) {
 		Rectangle otherHitbox((int)object->GetPosition()->GetX(), (int)object->GetPosition()->GetX() + object->GetHitbox().first, (int)object->GetPosition()->GetY(), (int)object->GetPosition()->GetY() + object->GetHitbox().second);
 
-		if (myHitbox.IsOverlap(otherHitbox) == true && object->GetTag() != m_tag && object->GetIsActive() == true) {
+		if (myHitbox.IsOverlap(otherHitbox) == true && object->GetTag() == ObjectTag::E_ENEMY && m_tag == ObjectTag::E_FRIENDLY_BULLET && object->GetIsActive() == true) {
 			//std::cout << "Collision" << std::endl;
 			//object->TakeDamage(1);
+			if (object->GetTag() == ObjectTag::E_ENEMY) {
+				std::shared_ptr<EnemyObject> enemy = std::dynamic_pointer_cast<EnemyObject, Object>(object);
+				bool isDead = enemy->TakeDamage(1);
+
+				if (isDead == true) {
+					w.SpawnExplosion(*enemy->GetPosition());
+				}
+			}
+
 			m_isActive = false;
 			return;
 		}
 	}
 
-	if (m_tag != ObjectTag::E_FRIENDLY) {
+	if (m_tag != ObjectTag::E_FRIENDLY_BULLET) {
 		Rectangle otherHitbox((int)p->GetPosition()->GetX(), (int)p->GetPosition()->GetX() + p->GetHitbox().first, (int)p->GetPosition()->GetY(), (int)p->GetPosition()->GetY() + p->GetHitbox().second);
 
 		if (myHitbox.IsOverlap(otherHitbox) == true && p->GetIsActive() == true) {
@@ -51,19 +62,19 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 			//p->TakeDamage(1);
 		}
 	}
-	else {
-		for (std::shared_ptr<EnemyObject> enemy : e) {
-			Rectangle otherHitbox((int)enemy->GetPosition()->GetX(), (int)enemy->GetPosition()->GetX() + enemy->GetHitbox().first, (int)enemy->GetPosition()->GetY(), (int)enemy->GetPosition()->GetY() + enemy->GetHitbox().second);
+	//else {
+	//	for (std::shared_ptr<EnemyObject> enemy : e) {
+	//		Rectangle otherHitbox((int)enemy->GetPosition()->GetX(), (int)enemy->GetPosition()->GetX() + enemy->GetHitbox().first, (int)enemy->GetPosition()->GetY(), (int)enemy->GetPosition()->GetY() + enemy->GetHitbox().second);
 
-			if (myHitbox.IsOverlap(otherHitbox) == true && enemy->GetIsActive() == true) {
-				//std::cout << "Character Hit" << std::endl;
-				m_isActive = false;
-				bool isDead = enemy->TakeDamage(1);
-				if (isDead == true) {
-					w.SpawnExplosion(*enemy->GetPosition());
-				}
-				//p->TakeDamage(1);
-			}
-		}
-	}
+	//		if (myHitbox.IsOverlap(otherHitbox) == true && enemy->GetIsActive() == true) {
+	//			//std::cout << "Character Hit" << std::endl;
+	//			m_isActive = false;
+	//			bool isDead = enemy->TakeDamage(1);
+	//			if (isDead == true) {
+	//				w.SpawnExplosion(*enemy->GetPosition());
+	//			}
+	//			//p->TakeDamage(1);
+	//		}
+	//	}
+	//}
 }

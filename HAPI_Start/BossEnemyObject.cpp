@@ -5,7 +5,7 @@
 #include "World.h"
 #include "Visualisation.h"
 
-BossEnemyObject::BossEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 50)
+BossEnemyObject::BossEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 50, 1.0f)
 {
 	//m_health = 50;
 	m_sprayDirection = Vector3(0.0f, 1.0f, 0.0f);
@@ -38,14 +38,14 @@ void BossEnemyObject::Update(World& w)
 		
 		if (currentTime - m_shotTime >= 100) {
 			m_shotTime = currentTime;
-			w.SpawnBullet(*m_position, m_sprayDirection, m_tag);
+			w.SpawnBullet(*m_position, m_sprayDirection, ObjectTag::E_ENEMY_BULLET);
 
 			m_sprayDirection.Rotate(0.0872665f);
 		}
 	}
 }
 
-void BossEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
+void BossEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
 	if (p->GetIsActive() == true) {
 		Rectangle playerHitbox((int)p->GetPosition()->GetX(), (int)p->GetPosition()->GetX() + p->GetHitbox().first, (int)p->GetPosition()->GetY(), (int)p->GetPosition()->GetY() + p->GetHitbox().second);

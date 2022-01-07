@@ -2,7 +2,7 @@
 #include "World.h"
 #include "PlayerObject.h"
 
-RoamingEnemyObject::RoamingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 10)
+RoamingEnemyObject::RoamingEnemyObject(std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnemyObject(h, k, x, y, z, m, t, a, 10, 6.0f)
 {
 	//m_health = 10;
 
@@ -36,14 +36,14 @@ void RoamingEnemyObject::Update(World& w)
 		break;
 	case State::E_ATTACKING:
 		if (currentTime - m_shotTime > (DWORD)1000) {
-			w.SpawnBullet(*m_position, Vector3(1.0f, 0.0f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(-1.0f, 0.0f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(0.0f, 1.0f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(0.0f, -1.0f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(0.5f, 0.5f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(-0.5f, 0.5f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(0.5f, -0.5f, 0.0f), m_tag);
-			w.SpawnBullet(*m_position, Vector3(-0.5f, -0.5f, 0.0f), m_tag);
+			w.SpawnBullet(*m_position, Vector3(1.0f, 0.0f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(-1.0f, 0.0f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(0.0f, 1.0f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(0.0f, -1.0f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(0.5f, 0.5f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(-0.5f, 0.5f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(0.5f, -0.5f, 0.0f), ObjectTag::E_ENEMY_BULLET);
+			w.SpawnBullet(*m_position, Vector3(-0.5f, -0.5f, 0.0f), ObjectTag::E_ENEMY_BULLET);
 
 			m_shotTime = HAPI.GetTime();
 		}
@@ -64,7 +64,7 @@ void RoamingEnemyObject::Update(World& w)
 	Translate(*m_velocity * m_moveSpeed);
 }
 
-void RoamingEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::vector<std::shared_ptr<EnemyObject>>& e, std::shared_ptr<PlayerObject>& p, World& w)
+void RoamingEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
 }
 
