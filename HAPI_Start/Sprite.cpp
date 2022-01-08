@@ -94,7 +94,12 @@ void Sprite::Render(const Vector3& p, int f, BYTE*& s, int sw, int sh)
 	clippedRect.Clip(screenRect);
 	Vector3 invertedP = p;
 	invertedP.Invert();
+	if (clippedRect.m_left <= 0 && clippedRect.m_top <= 0) {
+		std::cout << "Error?" << std::endl;
+	}
 	clippedRect.Translate(invertedP);
+
+	
 
 
 	//Generic Sprite Rendering Here

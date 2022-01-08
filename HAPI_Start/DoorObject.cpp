@@ -25,3 +25,8 @@ void DoorObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::sh
 		w.MoveRoom(m_direction);
 	}
 }
+
+DoorObject::~DoorObject()
+{
+	std::cout << "Door Removed" << std::endl;
+}

@@ -16,7 +16,18 @@ Map::Map()
 
 void Map::GenerateMap()
 {
-	//m_rooms.clear();
+	for (size_t i = 0; i < 5; i++)
+	{
+		for (size_t j = 0; j < 5; j++)
+		{
+			m_rooms[i][j].m_up = false;
+			m_rooms[i][j].m_down = false;
+			m_rooms[i][j].m_left = false;
+			m_rooms[i][j].m_right = false;
+			m_rooms[i][j].m_isCleared = false;
+			m_rooms[i][j].m_isBossRoom = false;
+		}
+	}
 
 	m_currentRoomX = 2;
 	m_currentRoomY = 2;

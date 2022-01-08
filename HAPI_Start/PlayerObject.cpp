@@ -87,6 +87,10 @@ void PlayerObject::Update(World& w)
 			w.SpawnBullet(*m_position, target, ObjectTag::E_FRIENDLY_BULLET);
 			m_shotTime = HAPI.GetTime();
 		}
+
+		/*if (keyData.scanCode[HK_ESCAPE]) {
+			std::cout << "Pause" << std::endl;
+		}*/
 	}
 
 	//Normalizes the vector before applying the translation
@@ -164,4 +168,11 @@ bool PlayerObject::TakeDamage(unsigned int d)
 	}
 
 	return false;
+}
+
+void PlayerObject::Reset()
+{
+	m_health = m_maxHealth;
+	m_currentTime = HAPI.GetTime();
+	m_shotTime = m_currentTime;
 }

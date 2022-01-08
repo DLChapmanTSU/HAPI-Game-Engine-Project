@@ -21,4 +21,5 @@ void EnemyObject::Reset()
 {
 	m_health = m_maxHealth;
 	m_shotTime = HAPI.GetTime();
+	m_isActive = false;
 }

@@ -18,6 +18,7 @@ class ChasingEnemyObject;
 class BossEnemyObject;
 class BulletObject;
 class ExplosionObject;
+class Button;
 
 enum class DoorDirection;
 enum class ObjectTag;
@@ -39,8 +40,13 @@ private:
 	std::shared_ptr<Map> m_map;
 	std::shared_ptr<Audio> m_audio;
 	std::shared_ptr<StatBar> m_playerHealthBar;
+	std::shared_ptr<Button> m_resumeButton;
+	std::shared_ptr<Button> m_restartButton;
+	std::shared_ptr<Button> m_quitButton;
 	int m_enemyCount{ 0 };
 	int m_otherExtraInstanceCount{ 0 };
+	bool m_isPaused{ false };
+	size_t m_worldStartSize;
 public:
 	World();
 	void Run();

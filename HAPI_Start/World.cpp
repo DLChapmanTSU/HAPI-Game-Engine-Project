@@ -16,6 +16,7 @@
 #include "ExplosionObject.h"
 #include "Audio.h"
 #include "StatBar.h"
+#include "Button.h"
 
 // Include the HAPI header to get access to all of HAPIs interfaces
 #include <HAPI_lib.h>
@@ -44,7 +45,7 @@ World::World()
 	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));*/
 	//m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
 
-	for (size_t i = 0; i < 100; i++)
+	for (size_t i = 0; i < 200; i++)
 	{
 		m_bulletPool.push_back(std::make_shared<BulletObject>(std::pair<int, int>(32, 32), "Bullet", 0.0f, 0.0f, 0.0f, 0, ObjectTag::E_FRIENDLY_BULLET, false));
 		m_bulletPool.push_back(std::make_shared<BulletObject>(std::pair<int, int>(32, 32), "Bullet", 0.0f, 0.0f, 0.0f, 0, ObjectTag::E_ENEMY_BULLET, false));
@@ -86,11 +87,16 @@ World::World()
 	m_audio = std::make_shared<Audio>(Audio());
 
 	m_playerHealthBar = std::make_shared<StatBar>(Vector3(10.0f, 738.0f, 0.0f), m_playerObject->GetHealth(), HAPI_TColour::RED);
+	m_resumeButton = std::make_shared<Button>(Vector3(100.0f, 100.0f, 0.0f), 150, 100, "Resume");
+	m_restartButton = std::make_shared<Button>(Vector3(100.0f, 300.0f, 0.0f), 150, 100, "Restart");
+	m_quitButton = std::make_shared<Button>(Vector3(100.0f, 500.0f, 0.0f), 150, 100, "Quit");
+
+	m_worldStartSize = m_worldObjects.size();
 }
 
 void World::Run()
 {
-	std::srand(time(NULL));
+	std::srand((unsigned int)time(NULL));
 	//Initialize screen dimensions and eyes distance from the screen
 	int width{ 1024 };
 	int height{ 768 };
@@ -123,20 +129,107 @@ void World::Run()
 
 	SpawnEnemies();
 
-
-
 	while (HAPI.Update()) {
 		//Clears screen to given colour
 		HAPI_TColour bgColour(10, 56, 33, 255);
 		vis.ClearToColour(m_map->GetCurrentRoom().GetColour(), 1024, 768);
 
+		
+
+		
+
 		if (m_playerObject->GetHealth() <= 0) {
 			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Game Over", 100);
+			m_restartButton->SetIsActive(true);
+			m_quitButton->SetIsActive(true);
+
+			HAPI_TMouseData mouseData = HAPI.GetMouseData();
+
+			if (mouseData.leftButtonDown == true) {
+				Vector3 mousePos;
+				mousePos.SetX((float)mouseData.x);
+				mousePos.SetY((float)mouseData.y);
+				bool isRestartClicked = m_restartButton->HasClick(mousePos);
+				bool isQuitClicked = m_quitButton->HasClick(mousePos);
+				if (isRestartClicked == true) {
+					std::cout << "Button Pressed" << std::endl;
+					ResetWorld();
+				}
+				else if (isQuitClicked == true) {
+					HAPI.Close();
+				}
+			}
 		}
 		else if (CheckAllEnemiesDead() == true && m_map->GetCurrentRoom().GetIsBossRoom() == true) {
 			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "You Win", 100);
+
+			m_restartButton->SetIsActive(true);
+			m_quitButton->SetIsActive(true);
+
+			HAPI_TMouseData mouseData = HAPI.GetMouseData();
+
+			if (mouseData.leftButtonDown == true) {
+				Vector3 mousePos;
+				mousePos.SetX((float)mouseData.x);
+				mousePos.SetY((float)mouseData.y);
+				bool isRestartClicked = m_restartButton->HasClick(mousePos);
+				bool isQuitClicked = m_quitButton->HasClick(mousePos);
+				if (isRestartClicked == true) {
+					std::cout << "Button Pressed" << std::endl;
+					ResetWorld();
+				}
+				else if (isQuitClicked == true) {
+					HAPI.Close();
+				}
+			}
+		}
+		else if (m_isPaused == true) {
+			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Paused", 100);
+			m_restartButton->SetIsActive(true);
+			m_quitButton->SetIsActive(true);
+			m_resumeButton->SetIsActive(true);
+
+			HAPI_TMouseData mouseData = HAPI.GetMouseData();
+
+			if (mouseData.leftButtonDown == true) {
+				Vector3 mousePos;
+				mousePos.SetX((float)mouseData.x);
+				mousePos.SetY((float)mouseData.y);
+				bool isRestartClicked = m_restartButton->HasClick(mousePos);
+				bool isQuitClicked = m_quitButton->HasClick(mousePos);
+				bool isResumeClicked = m_resumeButton->HasClick(mousePos);
+				if (isRestartClicked == true) {
+					std::cout << "Button Pressed" << std::endl;
+					ResetWorld();
+				}
+				else if (isQuitClicked == true) {
+					HAPI.Close();
+				}
+				else if (isResumeClicked == true) {
+					m_restartButton->SetIsActive(false);
+					m_quitButton->SetIsActive(false);
+					m_resumeButton->SetIsActive(false);
+					m_isPaused = false;
+				}
+			}
 		}
 		else {
+
+			HAPI_TKeyboardData keyboardData = HAPI.GetKeyboardData();
+			HAPI_TControllerData controllerData = HAPI.GetControllerData(0);
+
+			if (controllerData.isAttached == true) {
+				if (controllerData.digitalButtons[HK_DIGITAL_START] == true) {
+					m_isPaused = true;
+				}
+			}
+			else {
+				if (keyboardData.scanCode[HK_ESCAPE] == true) {
+					std::cout << "Paused" << std::endl;
+					m_isPaused = true;
+				}
+			}
+
 			m_playerObject->CheckCollision(m_worldObjects, m_playerObject, *this);
 
 			if (CheckAllEnemiesDead() == true) {
@@ -147,19 +240,6 @@ void World::Run()
 					}
 				}
 			}
-			else {
-				/*for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
-					if (e->GetIsActive() == true) {
-						e->CheckCollision(m_worldObjects, m_enemyPool, m_playerObject, *this);
-					}
-				}*/
-			}
-
-			/*for (std::shared_ptr<Object> b : m_bulletPool) {
-				if (b->GetIsActive() == true) {
-					b->CheckCollision(m_worldObjects, m_playerObject, *this);
-				}
-			}*/
 
 			for (size_t i = 0; i < m_worldObjects.size(); i++)
 			{
@@ -174,11 +254,6 @@ void World::Run()
 				CleaUpRuntimeObjects();
 				m_lastUpdateTime = HAPI.GetTime();
 				m_playerObject->Update(*this);
-				/*for (std::shared_ptr<Object> o : m_bulletPool) {
-					if (o->GetIsActive() == true) {
-						o->Update(*this);
-					}
-				}*/
 
 				for (size_t i = 0; i < m_worldObjects.size(); i++)
 				{
@@ -187,55 +262,9 @@ void World::Run()
 					}
 				}
 
-				/*for (std::shared_ptr<Object> o : m_worldObjects) {
-					if (o->GetIsActive() == true) {
-						o->Update(*this);
-					}
-				}*/
-
-				/*for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
-					if (e->GetIsActive() == true) {
-						e->Update(*this);
-					}
-				}*/
-
-				/*for (std::shared_ptr<Object> e : m_explosionPool) {
-					if (e->GetIsActive() == true) {
-						e->Update(*this);
-					}
-				}*/
-
 				m_playerHealthBar->SetValue(m_playerObject->GetHealth());
-
-				/*if (m_map->GetCurrentRoom().HasUpDoor() == true) {
-
-				}
-				else if (m_map->GetCurrentRoom().HasDownDoor() == true) {
-
-				}
-				else if (m_map->GetCurrentRoom().HasLeftDoor() == true) {
-
-				}
-				else if (m_map->GetCurrentRoom().HasRightDoor() == true) {
-
-				}*/
-
-				
 			}
 		}
-
-		/*if (keyData.scanCode[HK_SPACE]) {
-			for (std::shared_ptr<Object> o : m_bulletPool) {
-				if (o->GetIsActive() == false && o->GetTag() == ObjectTag::E_FRIENDLY) {
-					o->SetActive(true);
-					Vector3 spawnPos = *m_playerObject->GetPosition();
-					spawnPos.SetX(spawnPos.GetX() + 16.0f);
-					o->SetPosition(spawnPos);
-					o->SetVelocity(Vector3(0.0f, -1.0f, 0.0f));
-					break;
-				}
-			}
-		}*/
 
 		
 
@@ -261,6 +290,7 @@ void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag t)
 			m_bulletPool[i]->SetPosition(p);
 			m_bulletPool[i]->SetVelocity(v);
 			m_bulletPool[i]->SetActive(true);
+			m_bulletPool[i]->ResetTimer();
 			//std::make_shared<BulletObject>(*m_bulletPool[i]);
 			//BulletObject& b = *m_bulletPool[i];
 			m_worldObjects.push_back(m_bulletPool[i]);
@@ -269,18 +299,6 @@ void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag t)
 			break;
 		}
 	}
-
-	/*for (std::shared_ptr<Object> b : m_bulletPool) {
-		if (b->GetIsActive() == false && b->GetTag() == t) {
-			b->SetPosition(p);
-			b->SetVelocity(v);
-			b->SetActive(true);
-			m_worldObjects.push_back(b);
-			m_audio->PlaySound("Shoot");
-			m_otherExtraInstanceCount++;
-			break;
-		}
-	}*/
 }
 
 void World::SpawnExplosion(const Vector3& p)
@@ -295,17 +313,6 @@ void World::SpawnExplosion(const Vector3& p)
 			break;
 		}
 	}
-
-	/*for (std::shared_ptr<Object> e : m_explosionPool) {
-		if (e->GetIsActive() == false) {
-			e->SetPosition(p);
-			e->SetActive(true);
-			m_worldObjects.push_back(e);
-			m_audio->PlaySound("Explosion");
-			m_otherExtraInstanceCount++;
-			break;
-		}
-	}*/
 }
 
 void World::MoveRoom(DoorDirection& d)
@@ -316,7 +323,12 @@ void World::MoveRoom(DoorDirection& d)
 
 	for (int i = 0; i < m_enemyCount + m_otherExtraInstanceCount; i++)
 	{
-		m_worldObjects.pop_back();
+		if (m_worldObjects.size() <= m_worldStartSize) {
+			break;
+		}
+		else {
+			m_worldObjects.pop_back();
+		}
 	}
 
 	std::cout << "Door Hit" << std::endl;
@@ -451,9 +463,14 @@ void World::MasterRender(Visualisation& v, float s)
 	//Will return false if this is the case
 	m_playerObject->Render(v, s);
 
-	for (std::shared_ptr<Object> o : m_worldObjects) {
-		o->Render(v, s);
+	for (size_t i = 0; i < m_worldObjects.size(); i++)
+	{
+		m_worldObjects[i]->Render(v, s);
 	}
+
+	/*for (std::shared_ptr<Object> o : m_worldObjects) {
+		o->Render(v, s);
+	}*/
 
 	/*for (std::shared_ptr<Object> o : m_bulletPool) {
 		o->Render(v, s);
@@ -468,6 +485,10 @@ void World::MasterRender(Visualisation& v, float s)
 	}*/
 
 	m_playerHealthBar->Render(v);
+
+	m_resumeButton->Render(v);
+	m_restartButton->Render(v);
+	m_quitButton->Render(v);
 	//v.RenderDefault(Vector3(10.0f, 10.0f, 0.0f), 100, 20, HAPI_TColour::GREEN);
 }
 
@@ -479,9 +500,15 @@ bool World::CheckAllEnemiesDead()
 
 	bool allDead{ true };
 
-	int startPoint = m_worldObjects.size() - m_enemyCount - m_otherExtraInstanceCount;
+	int startPoint = (int)m_worldObjects.size() - m_enemyCount - m_otherExtraInstanceCount;
 
-	for (int i = startPoint; i < (int)m_worldObjects.size(); i++)
+	if (startPoint <= 3) {
+		return true;
+	}
+
+	int endPoint = (int)m_worldObjects.size() - m_otherExtraInstanceCount;
+
+	for (int i = startPoint; i < endPoint; i++)
 	{
 		if (m_worldObjects[i]->GetIsActive() == true) {
 			allDead = false;
@@ -515,7 +542,7 @@ void World::SpawnEnemies()
 		return;
 	}
 
-	int numberToSpawn = std::rand() % (points.size() - 1);
+	int numberToSpawn = std::rand() % points.size();
 
 	m_enemyCount = numberToSpawn + 1;
 
@@ -529,9 +556,9 @@ void World::SpawnEnemies()
 			for (size_t j = 0; j < 5; j++)
 			{
 				if (m_roamingEnemyPool[j]->GetIsActive() == false) {
+					m_roamingEnemyPool[j]->Reset();
 					m_roamingEnemyPool[j]->SetActive(true);
 					m_roamingEnemyPool[j]->SetPosition(points[i]);
-					m_roamingEnemyPool[j]->Reset();
 
 					m_worldObjects.push_back(m_roamingEnemyPool[j]);
 					break;
@@ -542,9 +569,9 @@ void World::SpawnEnemies()
 			for (size_t j = 0; j < 5; j++)
 			{
 				if (m_chasingEnemyPool[j]->GetIsActive() == false) {
+					m_chasingEnemyPool[j]->Reset();
 					m_chasingEnemyPool[j]->SetActive(true);
 					m_chasingEnemyPool[j]->SetPosition(points[i]);
-					m_chasingEnemyPool[j]->Reset();
 
 					m_worldObjects.push_back(m_chasingEnemyPool[j]);
 					break;
@@ -571,6 +598,12 @@ void World::SpawnEnemies()
 
 void World::ResetWorld()
 {
+	m_isPaused = false;
+
+	while (m_worldObjects.size() > m_worldStartSize) {
+		m_worldObjects.pop_back();
+	}
+
 	for (std::shared_ptr<Object> b : m_bulletPool) {
 		b->SetActive(false);
 	}
@@ -579,9 +612,15 @@ void World::ResetWorld()
 		e->SetActive(false);
 	}
 
-	for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
-		e->SetActive(false);
+	for (std::shared_ptr<RoamingEnemyObject> e : m_roamingEnemyPool) {
+		e->Reset();
 	}
+
+	for (std::shared_ptr<ChasingEnemyObject> e : m_chasingEnemyPool) {
+		e->Reset();
+	}
+
+	m_bossEnemy->Reset();
 
 	for (std::shared_ptr<Object> o : m_worldObjects) {
 		if (o->GetTag() == ObjectTag::E_DOOR) {
@@ -594,18 +633,35 @@ void World::ResetWorld()
 
 	m_playerObject->SetActive(true);
 	m_playerObject->SetPosition(Vector3(301.0f, 301.0f, 0.0f));
+	m_playerObject->Reset();
+
+	m_map->GenerateMap();
+	m_enemyCount = 0;
+	m_otherExtraInstanceCount = 0;
+	m_restartButton->SetIsActive(false);
+	m_resumeButton->SetIsActive(false);
+	m_quitButton->SetIsActive(false);
+	SpawnEnemies();
 }
 
 void World::CleaUpRuntimeObjects()
 {
-	int loopStart = m_worldObjects.size() - m_otherExtraInstanceCount;
+	int loopStart = (int)m_worldObjects.size() - m_otherExtraInstanceCount;
 
 	for (size_t i = loopStart; i < m_worldObjects.size(); i++)
 	{
-		if (m_worldObjects[i]->GetIsActive() == false) {
+		if (m_worldObjects[i]->GetIsActive() == false && m_worldObjects[i]->GetTag() != ObjectTag::E_DOOR) {
+			/*std::shared_ptr<EnemyObject> temp = std::dynamic_pointer_cast<EnemyObject>(m_worldObjects[i]);
+			if (temp == nullptr) {
+				std::cout << "Isn't an enemy" << std::endl;
+				m_otherExtraInstanceCount--;
+			}
+			else {
+				m_enemyCount--;
+			}*/
 			m_worldObjects.erase(m_worldObjects.begin() + i);
-			i--;
 			m_otherExtraInstanceCount--;
+			i--;
 		}
 	}
 }

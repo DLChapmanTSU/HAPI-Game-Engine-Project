@@ -78,3 +78,8 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 	//	}
 	//}
 }
+
+void BulletObject::ResetTimer()
+{
+	m_lifeTime = 0.0f;
+}

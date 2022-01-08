@@ -73,6 +73,10 @@ void Vector3::Lerp(Vector3& a, Vector3& b, float s)
 		s = 0;
 	}
 
+	if (s > 1) {
+		s = 1;
+	}
+
 	Vector3 lerpResult = (a * (1.0f - s)) + (b * s);
 	m_x = lerpResult.m_x;
 	m_y = lerpResult.m_y;
