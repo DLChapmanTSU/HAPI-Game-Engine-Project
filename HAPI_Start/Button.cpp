@@ -12,6 +12,8 @@ Button::Button(Vector3& p, unsigned int w, unsigned int h, std::string m, HAPISP
 	m_isActive = a;
 }
 
+//p = the position of the mouse
+//Returns true if the mouse is over the bounds of the button
 bool Button::HasClick(Vector3& p)
 {
 	Rectangle buttonRect(m_screenPosition.GetX(), m_screenPosition.GetX() + m_width, m_screenPosition.GetY(), m_screenPosition.GetY() + m_width);
@@ -24,6 +26,7 @@ bool Button::HasClick(Vector3& p)
 	}
 }
 
+//Renders a default square of a given colour and text with a set message
 void Button::Render(Visualisation& v)
 {
 	if (m_isActive == false) {

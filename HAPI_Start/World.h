@@ -54,7 +54,6 @@ public:
 	void SpawnExplosion(const Vector3& p);
 	void MoveRoom(DoorDirection& d);
 	const Vector3& GetEnemyPosition(size_t i);
-	void SetAIVelocity(size_t i, Vector3& v);
 	const Vector3& GetPlayerPosition();
 private:
 	void MasterRender(Visualisation& v, float s);

@@ -28,23 +28,26 @@
 World::World()
 {
 	//Create Player
-	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(64, 64), "Player", 301.0f, 301.0f, 0.0f, 0, ObjectTag::E_FRIENDLY, true);
+	m_playerObject = std::make_shared<PlayerObject>(std::pair<int, int>(32, 64), "Player", 301.0f, 301.0f, 0.0f, 2, ObjectTag::E_FRIENDLY, true);
 	//Create Doors
-	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_UP, std::pair<int, int>(64, 64), "Door", 480.0f, 32.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
-	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_DOWN, std::pair<int, int>(64, 64), "Door", 480.0f, 672.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
-	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_LEFT, std::pair<int, int>(64, 64), "Door", 32.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
-	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_RIGHT, std::pair<int, int>(64, 64), "Door", 928.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_UP, std::pair<int, int>(64, 64), "Door", 480.0f, 64.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_DOWN, std::pair<int, int>(64, 64), "Door", 480.0f, 640.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_LEFT, std::pair<int, int>(64, 64), "Door", 64.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
+	m_worldObjects.push_back(std::make_shared<DoorObject>(DoorDirection::E_RIGHT, std::pair<int, int>(64, 64), "Door", 896.0f, 384.0f, 0.0f, 0, ObjectTag::E_DOOR, true));
 	//Create world objects for game
-	/*m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(256, 256), "Background", 100.0f, 100.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 100.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 500.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 290.0f, 180.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 750.0f, 100.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 0.0f, 0.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 300.0f, 0.0f, 4));
-	m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 200.0f, 600.0f, 0.0f, 4));*/
-	//m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4));
+	for (size_t i = 0; i < 16; i++)
+	{
+		m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Wall", 64.0f * i, 0.0f, 0.0f, 0, ObjectTag::E_NEUTRAL, true));
+		m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Wall", 64.0f * i, 704.0f, 0.0f, 0, ObjectTag::E_NEUTRAL, true));
+	}
 
+	for (size_t i = 1; i < 11; i++)
+	{
+		m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Wall", 0.0f, 64.0f * i, 0.0f, 0, ObjectTag::E_NEUTRAL, true));
+		m_worldObjects.push_back(std::make_shared<WallObject>(std::pair<int, int>(64, 64), "Wall", 960.0f, 64.0f * i, 0.0f, 0, ObjectTag::E_NEUTRAL, true));
+	}
+
+	//Fills object pools
 	for (size_t i = 0; i < 200; i++)
 	{
 		m_bulletPool.push_back(std::make_shared<BulletObject>(std::pair<int, int>(32, 32), "Bullet", 0.0f, 0.0f, 0.0f, 0, ObjectTag::E_FRIENDLY_BULLET, false));
@@ -53,7 +56,7 @@ World::World()
 
 	for (size_t i = 0; i < 20; i++)
 	{
-		m_explosionPool.push_back(std::make_shared<ExplosionObject>(std::pair<int, int>(64, 64), "Test", 300.0f, 100.0f, 0.0f, 4, ObjectTag::E_PARTICLE, false));
+		m_explosionPool.push_back(std::make_shared<ExplosionObject>(std::pair<int, int>(96, 96), "Explosion", 300.0f, 100.0f, 0.0f, 4, ObjectTag::E_PARTICLE, false));
 	}
 
 	m_currentTime = HAPI.GetTime();
@@ -87,9 +90,9 @@ World::World()
 	m_audio = std::make_shared<Audio>(Audio());
 
 	m_playerHealthBar = std::make_shared<StatBar>(Vector3(10.0f, 738.0f, 0.0f), m_playerObject->GetHealth(), HAPI_TColour::RED);
-	m_resumeButton = std::make_shared<Button>(Vector3(100.0f, 100.0f, 0.0f), 150, 100, "Resume");
-	m_restartButton = std::make_shared<Button>(Vector3(100.0f, 300.0f, 0.0f), 150, 100, "Restart");
-	m_quitButton = std::make_shared<Button>(Vector3(100.0f, 500.0f, 0.0f), 150, 100, "Quit");
+	m_resumeButton = std::make_shared<Button>(Vector3(437.0f, 100.0f, 0.0f), 150, 100, "Resume");
+	m_restartButton = std::make_shared<Button>(Vector3(437.0f, 300.0f, 0.0f), 150, 100, "Restart");
+	m_quitButton = std::make_shared<Button>(Vector3(437.0f, 500.0f, 0.0f), 150, 100, "Quit");
 
 	m_worldStartSize = m_worldObjects.size();
 }
@@ -108,8 +111,9 @@ void World::Run()
 
 	BYTE* screen = HAPI.GetScreenPointer();
 
+	//Load in all needed sprites
 	Visualisation vis(width, height);
-	vis.GenerateSprite("Data\\playerSprite.tga", "Player", 64, 64, true, 64, 64, false);
+	vis.GenerateSprite("Data\\Player.png", "Player", 32, 64, true, 64, 64, true);
 	vis.GenerateSprite("Data\\shapeTest.png", "Test", 64, 64, true, 256, 64, true);
 	vis.GenerateSprite("Data\\background.tga", "Background", 256, 256, false, 256, 256, false);
 	vis.GenerateSprite("Data\\Bullet.png", "Bullet", 32, 32, true, 32, 32, false);
@@ -118,6 +122,8 @@ void World::Run()
 	vis.GenerateSprite("Data\\ChasingEnemy.png", "ChasingEnemy", 64, 64, true, 64, 64, false);
 	vis.GenerateSprite("Data\\BossEnemy.png", "BossEnemy", 80, 80, true, 1280, 80, true);
 	vis.GenerateSprite("Data\\RocketTarget.png", "Target", 64, 64, true, 64, 64, false);
+	vis.GenerateSprite("Data\\Explosion.png", "Explosion", 96, 96, true, 384, 96, true);
+	vis.GenerateSprite("Data\\Wall.png", "Wall", 64, 64, false, 64, 64, false);
 
 	//Audio aud;
 	//m_audio = aud;
@@ -129,15 +135,15 @@ void World::Run()
 
 	SpawnEnemies();
 
+	//Main loop
 	while (HAPI.Update()) {
 		//Clears screen to given colour
 		HAPI_TColour bgColour(10, 56, 33, 255);
 		vis.ClearToColour(m_map->GetCurrentRoom().GetColour(), 1024, 768);
 
-		
-
-		
-
+		//Checks to see if the game is over or the game is paused
+		//Renders the corresponding buttons if so
+		//If not, the game updates as normal
 		if (m_playerObject->GetHealth() <= 0) {
 			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Game Over", 100);
 			m_restartButton->SetIsActive(true);
@@ -145,6 +151,8 @@ void World::Run()
 
 			HAPI_TMouseData mouseData = HAPI.GetMouseData();
 
+			//Will check to see if the mouse cursor is over a button when left click is pressed
+			//Will either reset the game or close the game depending on the button pressed
 			if (mouseData.leftButtonDown == true) {
 				Vector3 mousePos;
 				mousePos.SetX((float)mouseData.x);
@@ -160,7 +168,7 @@ void World::Run()
 				}
 			}
 		}
-		else if (CheckAllEnemiesDead() == true && m_map->GetCurrentRoom().GetIsBossRoom() == true) {
+		else if (CheckAllEnemiesDead() == true && m_map->GetCurrentRoom().GetIsBossRoom() == true && m_bossEnemy->GetIsActive() == false) {
 			HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "You Win", 100);
 
 			m_restartButton->SetIsActive(true);
@@ -168,6 +176,8 @@ void World::Run()
 
 			HAPI_TMouseData mouseData = HAPI.GetMouseData();
 
+			//Will check to see if the mouse cursor is over a button when left click is pressed
+			//Will either reset the game or close the game depending on the button pressed
 			if (mouseData.leftButtonDown == true) {
 				Vector3 mousePos;
 				mousePos.SetX((float)mouseData.x);
@@ -191,6 +201,8 @@ void World::Run()
 
 			HAPI_TMouseData mouseData = HAPI.GetMouseData();
 
+			//Will check to see if the mouse cursor is over a button when left click is pressed
+			//Will either reset the game, resume the game or close the game depending on the button pressed
 			if (mouseData.leftButtonDown == true) {
 				Vector3 mousePos;
 				mousePos.SetX((float)mouseData.x);
@@ -214,10 +226,11 @@ void World::Run()
 			}
 		}
 		else {
-
+			//Main update loop
 			HAPI_TKeyboardData keyboardData = HAPI.GetKeyboardData();
 			HAPI_TControllerData controllerData = HAPI.GetControllerData(0);
 
+			//Pauses the game if escape/the start button is pressed
 			if (controllerData.isAttached == true) {
 				if (controllerData.digitalButtons[HK_DIGITAL_START] == true) {
 					m_isPaused = true;
@@ -232,15 +245,7 @@ void World::Run()
 
 			m_playerObject->CheckCollision(m_worldObjects, m_playerObject, *this);
 
-			if (CheckAllEnemiesDead() == true) {
-				for (size_t i = 0; i < 4; i++)
-				{
-					if (m_worldObjects[i]->GetIsActive() == true) {
-						m_worldObjects[i]->CheckCollision(m_worldObjects, m_playerObject, *this);
-					}
-				}
-			}
-
+			//Checks collisions for all world objects
 			for (size_t i = 0; i < m_worldObjects.size(); i++)
 			{
 				if (m_worldObjects[i]->GetIsActive() == true) {
@@ -248,6 +253,9 @@ void World::Run()
 				}
 			}
 
+
+			//Will only run object update functions after a set period of time
+			//This is to keep consistency between computers running the game at lower framerates
 			m_currentTime = HAPI.GetTime();
 
 			if (m_currentTime - m_lastUpdateTime >= (DWORD)20) {
@@ -265,23 +273,19 @@ void World::Run()
 				m_playerHealthBar->SetValue(m_playerObject->GetHealth());
 			}
 		}
-
 		
-
-		//Check collisions between each object
-		
-
+		//Renders each object once per frame
+		//Calculates the time between updates so that we can lerp between where each object was in the last update and where it will be next update
 		DWORD timeElapsed = m_currentTime - m_lastUpdateTime;
 
 		float fTime = (float)timeElapsed;
 		fTime /= 50.0f;
 
-		//std::cout << timeElapsed << std::endl;
-
 		MasterRender(vis, fTime);
 	}
 }
 
+//Loops through the bullet pool to spawn a bullet at a set position and velocity with a set tag
 void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag t)
 {
 	for (size_t i = 0; i < m_bulletPool.size(); i++)
@@ -291,8 +295,6 @@ void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag t)
 			m_bulletPool[i]->SetVelocity(v);
 			m_bulletPool[i]->SetActive(true);
 			m_bulletPool[i]->ResetTimer();
-			//std::make_shared<BulletObject>(*m_bulletPool[i]);
-			//BulletObject& b = *m_bulletPool[i];
 			m_worldObjects.push_back(m_bulletPool[i]);
 			m_audio->PlaySound("Shoot");
 			m_otherExtraInstanceCount++;
@@ -301,12 +303,15 @@ void World::SpawnBullet(Vector3& p, Vector3& v, ObjectTag t)
 	}
 }
 
+//Loops through the explosion pool to find an inactive explosion
+//Spawns it in at a set position
 void World::SpawnExplosion(const Vector3& p)
 {
 	for (size_t i = 0; i < m_explosionPool.size(); i++) {
 		if (m_explosionPool[i]->GetIsActive() == false) {
 			m_explosionPool[i]->SetPosition(p);
 			m_explosionPool[i]->SetActive(true);
+			m_explosionPool[i]->SetCurrentFrame(0);
 			m_worldObjects.push_back(m_explosionPool[i]);
 			m_audio->PlaySound("Explosion");
 			m_otherExtraInstanceCount++;
@@ -315,12 +320,15 @@ void World::SpawnExplosion(const Vector3& p)
 	}
 }
 
+//Moves to the next room if all enemies are dead
 void World::MoveRoom(DoorDirection& d)
 {
 	if (CheckAllEnemiesDead() == false) {
 		return;
 	}
 
+	//Clears all non-permanent objects from the world vector
+	//The only permanent objects are the edge walls and the doors
 	for (int i = 0; i < m_enemyCount + m_otherExtraInstanceCount; i++)
 	{
 		if (m_worldObjects.size() <= m_worldStartSize) {
@@ -338,6 +346,8 @@ void World::MoveRoom(DoorDirection& d)
 
 	m_otherExtraInstanceCount = 0;
 
+	//Based on the door entered, the game steps the current room to the next room
+	//Player is then placed to the opposite side of the room to the door they walked into
 	switch (d)
 	{
 	case DoorDirection::E_UP:
@@ -366,6 +376,7 @@ void World::MoveRoom(DoorDirection& d)
 
 	std::cout << "X: " << m_playerObject->GetPosition()->GetX() << " Y: " << m_playerObject->GetPosition()->GetY() << std::endl;
 
+	//Sets each door to active based on which doors are in the new room
 	if (m_map->GetCurrentRoom().HasUpDoor() == true) {
 		m_worldObjects[0]->SetActive(true);
 	}
@@ -394,6 +405,7 @@ void World::MoveRoom(DoorDirection& d)
 		m_worldObjects[3]->SetActive(false);
 	}
 
+	//Spawns in enemies if the player hasn't entered the new room yet
 	if (m_map->GetCurrentRoom().GetIsCleared() == false) {
 		SpawnEnemies();
 	}
@@ -411,16 +423,6 @@ const Vector3& World::GetEnemyPosition(size_t i)
 	return *m_worldObjects[i + 4]->GetPosition();
 }
 
-void World::SetAIVelocity(size_t i, Vector3& v)
-{
-	if (i > m_worldObjects.size()) {
-		HAPI.UserMessage("Tried to fetch AI position out of range", "ERROR");
-		HAPI.Close();
-	}
-
-	m_worldObjects[i + 4]->SetVelocity(v);
-}
-
 const Vector3& World::GetPlayerPosition()
 {
 	return *m_playerObject->GetPosition();
@@ -436,31 +438,13 @@ void World::MasterRender(Visualisation& v, float s)
 			o->SetCurrentFrame(o->GetCurrentFrame() + 1);
 		}
 
-		/*for (std::shared_ptr<Object> e : m_explosionPool) {
-			e->SetCurrentFrame(e->GetCurrentFrame() + 1);
-		}
-
-		for (std::shared_ptr<EnemyObject> e : m_enemyPool) {
-			e->SetCurrentFrame(e->GetCurrentFrame() + 1);
-		}*/
-
 		m_lastAnimationTime = HAPI.GetTime();
-		//std::cout << "Yes Animation" << std::endl;
 	}
-
-	/*float fs = (float)s;
-
-	Vector3 lerpPosition;
-	lerpPosition.Lerp(*m_playerObject->GetPosition(), *m_playerObject->GetPosition() + *m_playerObject->GetVelocity(), fs / (DWORD)20);
-
-	std::cout << "X: " << lerpPosition.GetX() << " Y: " << lerpPosition.GetY() << std::endl;
-	std::cout << (float)(s / (DWORD)100) << std::endl;
-
-	const Vector3 lerped = lerpPosition;*/
 
 	//Renders each object, taking in the key for the texture
 	//Ends the program if an invalid key is passed in
 	//Will return false if this is the case
+	//Function automatically kills the program if there is an error
 	m_playerObject->Render(v, s);
 
 	for (size_t i = 0; i < m_worldObjects.size(); i++)
@@ -468,30 +452,15 @@ void World::MasterRender(Visualisation& v, float s)
 		m_worldObjects[i]->Render(v, s);
 	}
 
-	/*for (std::shared_ptr<Object> o : m_worldObjects) {
-		o->Render(v, s);
-	}*/
-
-	/*for (std::shared_ptr<Object> o : m_bulletPool) {
-		o->Render(v, s);
-	}*/
-
-	/*for (std::shared_ptr<EnemyObject> o : m_enemyPool) {
-		o->Render(v, s);
-	}*/
-
-	/*for (std::shared_ptr<Object> e : m_explosionPool) {
-		e->Render(v, s);
-	}*/
-
 	m_playerHealthBar->Render(v);
 
 	m_resumeButton->Render(v);
 	m_restartButton->Render(v);
 	m_quitButton->Render(v);
-	//v.RenderDefault(Vector3(10.0f, 10.0f, 0.0f), 100, 20, HAPI_TColour::GREEN);
 }
 
+//Loops through each enemy in the world 
+//Returns true if no enemies are found or all enemies in the world are inactive
 bool World::CheckAllEnemiesDead()
 {
 	if (m_enemyCount <= 0) {
@@ -516,38 +485,33 @@ bool World::CheckAllEnemiesDead()
 		}
 	}
 
-	/*for (std::shared_ptr<EnemyObject> o : m_enemyPool) {
-		if (o->GetIsActive() == true) {
-			allDead = false;
-			break;
-		}
-	}*/
-
 	return allDead;
 }
 
+//Spawns enemies into the world
+//Makes copies of pointers in the different enemy pools to do so
 void World::SpawnEnemies()
 {
 	std::vector<Vector3> points = m_map->GetCurrentRoom().GetSpawnPoints();
 
+	//Just spawns the boss enemy if the current room is the boss room
 	if (m_map->GetCurrentRoom().GetIsBossRoom() == true) {
-		/*m_enemyPool[m_enemyPool.size() - 1]->SetActive(true);
-		m_enemyPool[m_enemyPool.size() - 1]->SetPosition(Vector3(472.0f, 344.0f, 0.0f));
-		m_enemyPool[m_enemyPool.size() - 1]->Reset();*/
 		m_enemyCount = 1;
+		m_bossEnemy->Reset();
 		m_bossEnemy->SetActive(true);
 		m_bossEnemy->SetPosition(Vector3(472.0f, 344.0f, 0.0f));
-		m_bossEnemy->Reset();
 		m_worldObjects.push_back(m_bossEnemy);
 		return;
 	}
 
+	//Randomly decides a number of enemies to spawn
 	int numberToSpawn = std::rand() % points.size();
 
 	m_enemyCount = numberToSpawn + 1;
 
 	for (size_t i = 0; i <= numberToSpawn; i++)
 	{
+		//Randomly chooses a type of enemy to spawn and spawns it at the given position
 		int rng = std::rand() % 2;
 
 		switch (rng)
@@ -581,21 +545,13 @@ void World::SpawnEnemies()
 		default:
 			break;
 		}
-
-		/*if (m_enemyPool[rng]->GetIsActive() == true) {
-			i--;
-		}
-		else {
-			m_enemyPool[rng]->SetActive(true);
-			m_enemyPool[rng]->SetPosition(points[i]);
-			m_enemyPool[rng]->Reset();
-
-			std::shared_ptr<Object> obj = std::make_shared<Object>(*m_enemyPool[rng]);
-			m_worldObjects.push_back(obj);
-		}*/
 	}
 }
 
+//Resets the world to how it was at the start of the simulation
+//All pooled objects are set to inactive
+//Players health is reset
+//A new map is generated
 void World::ResetWorld()
 {
 	m_isPaused = false;
@@ -623,7 +579,7 @@ void World::ResetWorld()
 	m_bossEnemy->Reset();
 
 	for (std::shared_ptr<Object> o : m_worldObjects) {
-		if (o->GetTag() == ObjectTag::E_DOOR) {
+		if (o->GetTag() == ObjectTag::E_DOOR || o->GetTag() == ObjectTag::E_NEUTRAL) {
 			o->SetActive(true);
 		}
 		else {
@@ -644,6 +600,9 @@ void World::ResetWorld()
 	SpawnEnemies();
 }
 
+//Function runs every loop
+//Removes any inactive objects that were spawned during runtime from the world vector
+//Inactive enemies are left in the world so that the game can keep a track of how many enemies are dead in CheckAllEnemiesDead()
 void World::CleaUpRuntimeObjects()
 {
 	int loopStart = (int)m_worldObjects.size() - m_otherExtraInstanceCount;
@@ -651,14 +610,6 @@ void World::CleaUpRuntimeObjects()
 	for (size_t i = loopStart; i < m_worldObjects.size(); i++)
 	{
 		if (m_worldObjects[i]->GetIsActive() == false && m_worldObjects[i]->GetTag() != ObjectTag::E_DOOR) {
-			/*std::shared_ptr<EnemyObject> temp = std::dynamic_pointer_cast<EnemyObject>(m_worldObjects[i]);
-			if (temp == nullptr) {
-				std::cout << "Isn't an enemy" << std::endl;
-				m_otherExtraInstanceCount--;
-			}
-			else {
-				m_enemyCount--;
-			}*/
 			m_worldObjects.erase(m_worldObjects.begin() + i);
 			m_otherExtraInstanceCount--;
 			i--;

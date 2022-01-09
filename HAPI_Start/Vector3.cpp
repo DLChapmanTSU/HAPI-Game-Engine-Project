@@ -50,13 +50,10 @@ void Vector3::Normalize()
 
 	if (length != 0) {
 		m_x /= length;
-		//m_x = std::roundf(m_x);
 
 		m_y /= length;
-		//m_y = std::roundf(m_y);
 
 		m_z /= length;
-		//m_z = std::roundf(m_z);
 	}
 }
 
@@ -67,6 +64,8 @@ void Vector3::Invert()
 	m_z -= m_z * 2;
 }
 
+//Linear interpolation
+//Mainly used when rendering between updates
 void Vector3::Lerp(Vector3& a, Vector3& b, float s)
 {
 	if (s < 0) {
@@ -83,6 +82,7 @@ void Vector3::Lerp(Vector3& a, Vector3& b, float s)
 	m_z = lerpResult.m_z;
 }
 
+//Calculates the distance between two points
 float Vector3::Distance(Vector3& a, Vector3& b)
 {
 	Vector3 aToB = b - a;
@@ -90,6 +90,8 @@ float Vector3::Distance(Vector3& a, Vector3& b)
 	return dist;
 }
 
+//Rotates in radians about the origin
+//Used mainly for the boss enemy to turn the velocity given to the bullets
 void Vector3::Rotate(float a)
 {
 	float newX = (m_x * std::cos(a)) - (m_y * std::sin(a));

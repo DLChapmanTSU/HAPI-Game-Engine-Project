@@ -16,10 +16,6 @@ void PlayerObject::Update(World& w)
 	}
 
 	m_currentTime = HAPI.GetTime();
-
-	//Checks user keyboard inputs
-		//If S is pressed, the eye distance is increased, drawing the eye away
-		//If W is pressed, the eye distance is decreased, bringing the eye closer to the screen
 	const HAPI_TKeyboardData& keyData = HAPI.GetKeyboardData();
 
 	const HAPI_TControllerData& conData = HAPI.GetControllerData(0);
@@ -30,8 +26,8 @@ void PlayerObject::Update(World& w)
 	Vector3 target(0.0f, 0.0f, 0.0f);
 
 	//Checks to see if the controller is plugged in
-	//If it is, movement is calculated using the left thumb stick
-	//Otherwise, movement is done using the arrow keys
+	//If it is, movement is calculated using the left thumb stick and aiming with the right thumb stick
+	//Otherwise, movement is done using the arrow keys and aiming with the mouse
 	if (conData.isAttached) {
 		//Controller Inputs
 		if (conData.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y] > 10000 || conData.digitalButtons[HK_DIGITAL_DPAD_UP] == true) {
@@ -49,14 +45,13 @@ void PlayerObject::Update(World& w)
 		}
 
 		Vector3 aimPos = Vector3(conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_X], -conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_Y], 0.0f);
-		//aimPos.Normalize();
 
 		target = aimPos - *m_position;
 		target.Normalize();
 
 		if (conData.digitalButtons[HK_DIGITAL_X] == true && (m_currentTime - m_shotTime) >= m_shotCooldown) {
 			std::cout << "X: " << target.GetX() << " Y: " << target.GetY() << std::endl;
-			w.SpawnBullet(*m_position, target, m_tag);
+			w.SpawnBullet(*m_position, target, ObjectTag::E_FRIENDLY_BULLET);
 			m_shotTime = HAPI.GetTime();
 			std::cout << "PEW" << std::endl;
 		}
@@ -87,10 +82,6 @@ void PlayerObject::Update(World& w)
 			w.SpawnBullet(*m_position, target, ObjectTag::E_FRIENDLY_BULLET);
 			m_shotTime = HAPI.GetTime();
 		}
-
-		/*if (keyData.scanCode[HK_ESCAPE]) {
-			std::cout << "Pause" << std::endl;
-		}*/
 	}
 
 	//Normalizes the vector before applying the translation
@@ -123,41 +114,24 @@ void PlayerObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 
 			switch (object->GetTag())
 			{
-			case ObjectTag::E_FRIENDLY:
-				break;
 			case ObjectTag::E_ENEMY:
-				//enemy->TakeDamage(1);
+				//Moves the player back if it attempts to walk into an enemy
+				SetPosition(*m_position - (*m_velocity * m_moveSpeed));
+				TakeDamage(1);
 				break;
 			case ObjectTag::E_NEUTRAL:
+				//Moves the player back if it attempts to walk into a wall
 				SetPosition(*m_position - (*m_velocity * m_moveSpeed));
-				/*if (myHitbox.m_right > otherHitbox.m_left && myHitbox.m_right < otherHitbox.m_right) {
-					SetPosition(*m_position - Vector3(myHitbox.m_right - otherHitbox.m_left, 0.0f, 0.0f));
-				}
-				else if (myHitbox.m_left < otherHitbox.m_right && myHitbox.m_left > otherHitbox.m_left) {
-					SetPosition(*m_position + Vector3(otherHitbox.m_right - myHitbox.m_left, 0.0f, 0.0f));
-				}
-				else if (myHitbox.m_bottom > otherHitbox.m_top && myHitbox.m_bottom < otherHitbox.m_bottom) {
-					SetPosition(*m_position - Vector3(0.0f, myHitbox.m_bottom - otherHitbox.m_top, 0.0f));
-				}
-				else if (myHitbox.m_top < otherHitbox.m_bottom && myHitbox.m_top > otherHitbox.m_top) {
-					SetPosition(*m_position + Vector3(0.0f, otherHitbox.m_bottom - myHitbox.m_top, 0.0f));
-				}*/
-				break;
-			case ObjectTag::E_DOOR:
-				//std::shared_ptr<Object> door = object;
-				//door = std::dynamic_pointer_cast<DoorObject>(door);
-				//w.MoveRoom(std::make_shared<DoorObject>(std::dynamic_pointer_cast<DoorObject>(object)));
 				break;
 			default:
 				break;
 			}
 		}
-		else {
-			//std::cout << "No Collision" << std::endl;
-		}
 	}
 }
 
+//Takes away from the players health and kills them if it is smaller than or equal to 0
+//Returns bool value so that the game knows to spawn an explosion on death
 bool PlayerObject::TakeDamage(unsigned int d)
 {
 	m_health -= d;
@@ -170,6 +144,7 @@ bool PlayerObject::TakeDamage(unsigned int d)
 	return false;
 }
 
+//Resets players stats
 void PlayerObject::Reset()
 {
 	m_health = m_maxHealth;

@@ -14,6 +14,13 @@ Map::Map()
 	}
 }
 
+//Creates a new map at random
+//Starts with a central room
+//Randomly chooses a room and a direction
+//Connects the given room and the room in said direction
+//Also makes the 9th room connected the boss room
+//IsReachable() makes sure the randomly chosen room is already connected to the rest of the map
+//This function is slow, so should only be done at the start of a new game or when the game is reset
 void Map::GenerateMap()
 {
 	for (size_t i = 0; i < 5; i++)
@@ -137,6 +144,8 @@ void Map::GenerateMap()
 	}
 }
 
+//Steps the current room to the room in the next direction
+//GenerateMap() does not allow for doors to be placed in directions that would lead out of bounds. Therefore, a check for this is not needed here
 void Map::StepRoom(RoomDirection d)
 {
 	switch (d)

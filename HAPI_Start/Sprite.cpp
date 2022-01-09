@@ -87,6 +87,7 @@ void Sprite::Render(const Vector3& p, int f, BYTE*& s, int sw, int sh)
 {
 	SetFrame(f);
 
+	//Uses rectangles to figure out how much of the sprite should be rendered on screen
 	Rectangle screenRect(0, sw, 0, sh);
 	Rectangle textureRect(0, m_textureWidth, 0, m_textureHeight);
 	textureRect.Translate(p);
@@ -94,9 +95,6 @@ void Sprite::Render(const Vector3& p, int f, BYTE*& s, int sw, int sh)
 	clippedRect.Clip(screenRect);
 	Vector3 invertedP = p;
 	invertedP.Invert();
-	if (clippedRect.m_left <= 0 && clippedRect.m_top <= 0) {
-		std::cout << "Error?" << std::endl;
-	}
 	clippedRect.Translate(invertedP);
 
 	
@@ -104,7 +102,6 @@ void Sprite::Render(const Vector3& p, int f, BYTE*& s, int sw, int sh)
 
 	//Generic Sprite Rendering Here
 	if (clippedRect.m_right - clippedRect.m_left <= 0 || clippedRect.m_bottom - clippedRect.m_top <= 0) {
-		//std::cout << "Not on screen" << std::endl;
 		return;
 	}
 

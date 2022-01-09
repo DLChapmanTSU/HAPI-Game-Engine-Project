@@ -16,11 +16,6 @@ RoamingEnemyObject::RoamingEnemyObject(std::pair<int, int> h, std::string k, flo
 
 void RoamingEnemyObject::Update(World& w)
 {
-	/*Vector3 targetVelocity = m_targetPosition;
-	targetVelocity = targetVelocity - *m_position;*/
-
-	
-
 	if (m_health <= 0) {
 		return;
 	}
@@ -29,6 +24,7 @@ void RoamingEnemyObject::Update(World& w)
 
 	UpdateState(w.GetPlayerPosition());
 
+	//Shoots if the enemy is within a set radius and patrols between set points if not
 	switch (m_currentState)
 	{
 	case State::E_STATIONARY:
@@ -66,6 +62,7 @@ void RoamingEnemyObject::Update(World& w)
 
 void RoamingEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w)
 {
+	//All other collisions handles what happens when this enemy is hit
 }
 
 void RoamingEnemyObject::UpdateState(const Vector3& p)
@@ -74,6 +71,7 @@ void RoamingEnemyObject::UpdateState(const Vector3& p)
 	Vector3 targetDifference = m_targetPositions[m_targetIndex] - *m_position;
 	Vector3 playerDifference = playerPos - *m_position;
 
+	//Makes the enemy attack if the player is in range and patrol if not
 	if (targetDifference.GetX() <= 20.0f && targetDifference.GetX() >= -20.0f && targetDifference.GetY() <= 20.0f && targetDifference.GetY() >= -20.0f) {
 		*m_position = m_targetPositions[m_targetIndex];
 		m_currentState = State::E_PATROLLING;

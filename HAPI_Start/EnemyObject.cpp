@@ -5,6 +5,8 @@ EnemyObject::EnemyObject(std::pair<int, int> h, std::string k, float x, float y,
 	m_maxHealth = m_health;
 }
 
+//Takes away from the enemies health and kills them if it is smaller than or equal to 0
+//Returns bool value so that the game knows to spawn an explosion on death
 bool EnemyObject::TakeDamage(unsigned int d)
 {
 	m_health -= d;
@@ -17,6 +19,7 @@ bool EnemyObject::TakeDamage(unsigned int d)
 	return false;
 }
 
+//Resets the enemies stats
 void EnemyObject::Reset()
 {
 	m_health = m_maxHealth;

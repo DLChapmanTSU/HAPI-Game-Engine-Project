@@ -2,6 +2,7 @@
 
 void ExplosionObject::Update(World& w)
 {
+	//Sets itself to false if all frames of the explosion have been looped through
 	if (m_currentFrame >= m_maxFrame - 1) {
 		m_isActive = false;
 	}

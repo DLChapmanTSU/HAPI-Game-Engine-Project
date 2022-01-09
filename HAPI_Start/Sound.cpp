@@ -2,6 +2,7 @@
 
 Sound::Sound(const std::string& f, bool l, float pan, float pitch, float v)
 {
+	//Kills the game if a sound that does not exist attempts to load
 	if (!HAPI.LoadSound(f)) {
 		HAPI.UserMessage("Sound Failed To Load", "ERROR");
 		HAPI.Close();

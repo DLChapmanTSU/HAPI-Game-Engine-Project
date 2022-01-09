@@ -20,10 +20,12 @@ void ChasingEnemyObject::Update(World& w)
 
 	UpdateState(w.GetPlayerPosition());
 
+	//Sets the target position to wherever the player is
 	Vector3 playerPosition = w.GetPlayerPosition();
 	Vector3 playerDirection = playerPosition - *m_position;
 	playerDirection.Normalize();
 
+	//Either follows the player, shoots the player if it's within range, or patrols between two set points
 	switch (m_currentState)
 	{
 	case State::E_STATIONARY:
@@ -59,6 +61,10 @@ void ChasingEnemyObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o,
 
 void ChasingEnemyObject::UpdateState(const Vector3& p)
 {
+	//Changes the state
+	//If the player is very close, the enemy will attack
+	//If the player is within a slightly wider range, the enemy will chase
+	//Otherwise, the enemy will roam between two set points
 	Vector3 playerPos = p;
 	Vector3 targetDifference = m_targetPositions[m_targetIndex] - *m_position;
 	Vector3 playerDifference = playerPos - *m_position;

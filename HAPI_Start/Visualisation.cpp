@@ -15,6 +15,8 @@ void Visualisation::GenerateSprite(std::string d, std::string i, int w, int h, b
 	m_sprites[i] = std::make_shared<Sprite>(aw, ah, a, d, w, h, t);
 }
 
+//Clears the screen to a set colour
+//Uses memset for speed if all colour values are the same
 void Visualisation::ClearToColour(const HAPI_TColour& c, int w, int h)
 {
 	if (c.red == c.green && c.red == c.blue) {
@@ -43,6 +45,8 @@ bool Visualisation::RenderTexture(const Vector3& p, std::string n, int f)
 	}
 }
 
+//Draws a rectangle at a set position with a set colour
+//Used mainly for UI
 void Visualisation::RenderDefault(const Vector3& p, const unsigned int w, const unsigned int h, HAPI_TColour& c)
 {
 	Rectangle screenRect(0, m_screenWidth, 0, m_screenHeight);
@@ -50,12 +54,8 @@ void Visualisation::RenderDefault(const Vector3& p, const unsigned int w, const 
 	textureRect.Translate(p);
 	Rectangle clippedRect = textureRect;
 	clippedRect.Clip(screenRect);
-	//Vector3 invertedP = p;
-	//invertedP.Invert();
-	//clippedRect.Translate(invertedP);
 
 	if (clippedRect.m_right - clippedRect.m_left <= 0 || clippedRect.m_bottom - clippedRect.m_top <= 0) {
-		//std::cout << "Not on screen" << std::endl;
 		return;
 	}
 

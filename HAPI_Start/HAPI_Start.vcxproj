@@ -19,12 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AI.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BossEnemyObject.cpp" />
     <ClCompile Include="BulletObject.cpp" />
     <ClCompile Include="Button.cpp" />
-    <ClCompile Include="CharacterObject.cpp" />
     <ClCompile Include="ChasingEnemyObject.cpp" />
     <ClCompile Include="DoorObject.cpp" />
     <ClCompile Include="EnemyObject.cpp" />
@@ -50,12 +48,10 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AI.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BossEnemyObject.h" />
     <ClInclude Include="BulletObject.h" />
     <ClInclude Include="Button.h" />
-    <ClInclude Include="CharacterObject.h" />
     <ClInclude Include="ChasingEnemyObject.h" />
     <ClInclude Include="DoorObject.h" />
     <ClInclude Include="EnemyObject.h" />

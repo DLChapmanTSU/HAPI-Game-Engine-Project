@@ -45,7 +45,13 @@ void Object::SetCurrentFrame(int f)
 		m_currentFrame = 0;
 	}
 	else if (f >= m_maxFrame) {
-		m_currentFrame = 0;
+		if (m_tag == ObjectTag::E_PARTICLE) {
+			m_isActive = false;
+			return;
+		}
+		else {
+			m_currentFrame = 0;
+		}
 	}
 	else {
 		m_currentFrame = f;
@@ -71,12 +77,6 @@ bool Object::Render(Visualisation& v, float s)
 	}
 
 	//Lerps the object between where it was the previous update and where it will be the next update
-	//float fs = (float)s;
-
-	if (m_position->GetX() == 0.0f && m_position->GetY() == 0.0f) {
-		std::cout << "Error?" << std::endl;
-	}
-
 	Vector3 lerpPosition;
 	lerpPosition.Lerp(*m_position, *m_position + *m_velocity, s);
 
@@ -90,19 +90,3 @@ bool Object::Render(Visualisation& v, float s)
 
 	return true;
 }
-
-//bool Object::TakeDamage(unsigned int d)
-//{
-//	if (m_tag == ObjectTag::E_DOOR) {
-//		return false;
-//	}
-//
-//	m_health -= d;
-//
-//	if (m_health <= 0) {
-//		m_isActive = false;
-//		return true;
-//	}
-//
-//	return false;
-//}
