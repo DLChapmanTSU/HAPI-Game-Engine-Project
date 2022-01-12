@@ -39,6 +39,7 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 
 					if (isDead == true) {
 						w.SpawnExplosion(*enemy->GetPosition());
+						w.GainPoints(10);
 					}
 
 					m_isActive = false;

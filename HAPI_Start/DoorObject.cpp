@@ -23,7 +23,7 @@ void DoorObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::sh
 
 	Rectangle playerHitbox((int)p->GetPosition()->GetX(), (int)p->GetPosition()->GetX() + p->GetHitbox().first, (int)p->GetPosition()->GetY(), (int)p->GetPosition()->GetY() + p->GetHitbox().second);
 
-	if (myHitbox.IsOverlap(playerHitbox) == true) {
+	if (myHitbox.IsOverlap(playerHitbox) == true || playerHitbox.IsOverlap(myHitbox) == true) {
 		w.MoveRoom(m_direction);
 	}
 }

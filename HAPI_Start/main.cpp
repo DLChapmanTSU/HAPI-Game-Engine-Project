@@ -37,7 +37,7 @@ void VerticalLine(int x, int y, int l, int w, int h);
 // When this function exits the program will close down
 void HAPI_Main()
 {
-	std::srand(time(0));
+	std::srand((unsigned int)time(0));
 	World world;
 	world.Run();
 }

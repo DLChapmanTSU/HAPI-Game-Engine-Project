@@ -1,6 +1,7 @@
 #include "Vector3.h"
 
 #include <cmath>
+#include<iostream>
 
 Vector3::Vector3(float x, float y, float z)
 {
@@ -75,8 +76,7 @@ void Vector3::Lerp(Vector3& a, Vector3& b, float s)
 	if (s > 1) {
 		s = 1;
 	}
-
-	Vector3 lerpResult = (a * (1.0f - s)) + (b * s);
+	Vector3 lerpResult = a * (1.0f - s) + b * s;
 	m_x = lerpResult.m_x;
 	m_y = lerpResult.m_y;
 	m_z = lerpResult.m_z;

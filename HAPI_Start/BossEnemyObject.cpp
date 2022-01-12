@@ -15,7 +15,7 @@ BossEnemyObject::BossEnemyObject(std::pair<int, int> h, std::string k, float x, 
 	{
 		LandingSpots temp;
 		temp.m_hasLanded = true;
-		temp.m_landingPosition = Vector3(std::rand() % 824 + 100, std::rand() % 568 + 100, 0.0f);
+		temp.m_landingPosition = Vector3((float)(std::rand() % 824 + 100), (float)(std::rand() % 568 + 100), 0.0f);
 		temp.m_startTime = 0;
 		m_spots.push_back(temp);
 	}
@@ -33,7 +33,7 @@ void BossEnemyObject::Update(World& w)
 	if (m_spots[nextShot].m_hasLanded == true) {
 		m_spots[nextShot].m_hasLanded = false;
 		m_spots[nextShot].m_startTime = HAPI.GetTime();
-		m_spots[nextShot].m_landingPosition = Vector3(std::rand() % 824 + 100, std::rand() % 568 + 100, 0.0f);
+		m_spots[nextShot].m_landingPosition = Vector3((float)(std::rand() % 824 + 100), (float)(std::rand() % 568 + 100), 0.0f);
 	}
 
 	UpdateState(w.GetPlayerPosition());
@@ -96,7 +96,7 @@ void BossEnemyObject::UpdateState(const Vector3& p)
 
 //The boss renders in a unique way
 //The game must render both the boss itself and all of the bosses missiles
-bool BossEnemyObject::Render(Visualisation& v, float s)
+bool BossEnemyObject::Render(Visualisation& v, float s, Vector3& c)
 {
 	//Won't render if the object is inactive
 	if (m_isActive == false) {

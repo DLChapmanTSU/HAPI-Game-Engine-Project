@@ -44,7 +44,7 @@ void PlayerObject::Update(World& w)
 			playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
 		}
 
-		Vector3 aimPos = Vector3(conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_X], -conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_Y], 0.0f);
+		Vector3 aimPos = Vector3((float)conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_X], (float)-conData.analogueButtons[HK_ANALOGUE_RIGHT_THUMB_Y], 0.0f);
 
 		target = aimPos - *m_position;
 		target.Normalize();
@@ -74,8 +74,8 @@ void PlayerObject::Update(World& w)
 			playerMove = playerMove + Vector3(-5.0f, 0.0f, 0.0f);
 		}
 
-		Vector3 mousePos = Vector3(mouseData.x, mouseData.y, 0.0f);
-		target = mousePos - *m_position;
+		Vector3 mousePos = Vector3((float)mouseData.x, (float)mouseData.y, 0.0f);
+		target = mousePos - Vector3(1024.0f / 2, 768.0f / 2, 0.0f);
 		target.Normalize();
 
 		if (mouseData.leftButtonDown && (m_currentTime - m_shotTime) >= m_shotCooldown) {

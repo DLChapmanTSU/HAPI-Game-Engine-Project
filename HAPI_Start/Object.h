@@ -45,10 +45,11 @@ public:
 	const std::shared_ptr<Vector3>& GetVelocity() const { return m_velocity; };
 	const ObjectTag GetTag() const { return m_tag; };
 	const bool GetIsActive() const { return m_isActive; };
+	const float GetMoveSpeed() const { return m_moveSpeed; };
 	//const int GetHealth() const { return m_health; };
 	void SetActive(bool a);
 	void SetVelocity(const Vector3& v);
-	virtual bool Render(Visualisation& v, float s);
+	virtual bool Render(Visualisation& v, float s, Vector3& c);
 	//bool TakeDamage(unsigned int d);
 	virtual void Update(World& w) = 0;
 	virtual void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w) = 0;

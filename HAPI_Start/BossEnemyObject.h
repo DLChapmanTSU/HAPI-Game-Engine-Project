@@ -23,5 +23,5 @@ public:
 	void Update(World& w);
 	void CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::shared_ptr<PlayerObject>& p, World& w);
 	void UpdateState(const Vector3& p);
-	bool Render(Visualisation& v, float s);
+	bool Render(Visualisation& v, float s, Vector3& c);
 };
