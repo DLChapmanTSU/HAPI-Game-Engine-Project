@@ -79,9 +79,6 @@ bool Object::Render(Visualisation& v, float s, Vector3& c)
 	//Lerps the object between where it was the previous update and where it will be the next update
 	Vector3 lerpPosition;
 	lerpPosition.Lerp(*m_position - c, (*m_position + (*m_velocity * m_moveSpeed)) - c, s);
-	//std::cout << s << std::endl;
-
-	//lerpPosition = lerpPosition;
 
 	const Vector3 lerped = lerpPosition;
 

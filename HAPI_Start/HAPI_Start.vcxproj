@@ -55,7 +55,6 @@
     <ClInclude Include="ChasingEnemyObject.h" />
     <ClInclude Include="DoorObject.h" />
     <ClInclude Include="EnemyObject.h" />
-    <ClInclude Include="EnvironmentObject.h" />
     <ClInclude Include="ExplosionObject.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Object.h" />

@@ -8,7 +8,7 @@
 
 void BulletObject::Update(World& w)
 {
-	if (m_lifeTime >= 10.0f) {
+	if (m_lifeTime >= 20.0f) {
 		m_lifeTime = 0.0f;
 		m_isActive = false;
 		return;
@@ -27,24 +27,29 @@ void BulletObject::CheckCollision(std::vector<std::shared_ptr<Object>>& o, std::
 	Rectangle myHitbox((int)m_position->GetX(), (int)m_position->GetX() + m_hitboxDimensions.first, (int)m_position->GetY(), (int)m_position->GetY() + m_hitboxDimensions.second);
 
 	//Only loops through the world to collide with enemies if the bullet was fired by the player
-	if (m_tag == ObjectTag::E_FRIENDLY_BULLET) {
-		for (std::shared_ptr<Object> object : o) {
-			Rectangle otherHitbox((int)object->GetPosition()->GetX(), (int)object->GetPosition()->GetX() + object->GetHitbox().first, (int)object->GetPosition()->GetY(), (int)object->GetPosition()->GetY() + object->GetHitbox().second);
+	for (std::shared_ptr<Object> object : o) {
+		Rectangle otherHitbox((int)object->GetPosition()->GetX(), (int)object->GetPosition()->GetX() + object->GetHitbox().first, (int)object->GetPosition()->GetY(), (int)object->GetPosition()->GetY() + object->GetHitbox().second);
 
-			if (myHitbox.IsOverlap(otherHitbox) == true && object->GetIsActive() == true) {
-				if (object->GetTag() == ObjectTag::E_ENEMY) {
-					//Dowcasts the current object so that TakeDamage() can be called
-					std::shared_ptr<EnemyObject> enemy = std::dynamic_pointer_cast<EnemyObject, Object>(object);
-					bool isDead = enemy->TakeDamage(1);
+		if (myHitbox.IsOverlap(otherHitbox) == true && object->GetIsActive() == true) {
+			if (object->GetTag() == ObjectTag::E_ENEMY && m_tag == ObjectTag::E_FRIENDLY_BULLET) {
+				//Dowcasts the current object so that TakeDamage() can be called
+				std::shared_ptr<EnemyObject> enemy = std::dynamic_pointer_cast<EnemyObject, Object>(object);
+				bool isDead = enemy->TakeDamage(1);
 
-					if (isDead == true) {
-						w.SpawnExplosion(*enemy->GetPosition());
-						w.GainPoints(10);
-					}
-
-					m_isActive = false;
-					return;
+				if (isDead == true) {
+					w.SpawnExplosion(*enemy->GetPosition());
+					w.GainPoints(10);
 				}
+				else {
+					w.PlayHitSound();
+				}
+
+				m_isActive = false;
+				return;
+			}
+			else if (object->GetTag() == ObjectTag::E_NEUTRAL) {
+				m_isActive = false;
+				return;
 			}
 		}
 	}

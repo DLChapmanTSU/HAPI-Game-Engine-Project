@@ -105,7 +105,7 @@ bool BossEnemyObject::Render(Visualisation& v, float s, Vector3& c)
 
 	//Lerps the object between where it was the previous update and where it will be the next update
 	Vector3 lerpPosition;
-	lerpPosition.Lerp(*m_position, *m_position + *m_velocity, s);
+	lerpPosition.Lerp(*m_position - c, (*m_position + (*m_velocity * m_moveSpeed)) - c, s);
 
 	const Vector3 lerped = lerpPosition;
 
@@ -118,7 +118,7 @@ bool BossEnemyObject::Render(Visualisation& v, float s, Vector3& c)
 	for (size_t i = 0; i < 5; i++)
 	{
 		if (m_spots[i].m_hasLanded == false) {
-			if (!v.RenderTexture(m_spots[i].m_landingPosition, "Target", 0)) {
+			if (!v.RenderTexture(m_spots[i].m_landingPosition - c, "Target", 0)) {
 				HAPI.UserMessage("Texture Does Not Exist In Visualisation", "ERROR");
 				HAPI.Close();
 				return false;

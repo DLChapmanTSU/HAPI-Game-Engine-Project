@@ -70,6 +70,7 @@ public:
 	const Vector3& GetEnemyPosition(size_t i);
 	const Vector3& GetPlayerPosition();
 	void GainPoints(const size_t p);
+	void PlayHitSound();
 private:
 	void MasterRender(Visualisation& v, float s);
 	bool CheckAllEnemiesDead();

@@ -4,7 +4,7 @@
 #include "PlayerObject.h"
 #include "World.h"
 
-DoorObject::DoorObject(DoorDirection d, std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : EnvironmentObject(h, k, x, y, z, m, t, a)
+DoorObject::DoorObject(DoorDirection d, std::pair<int, int> h, std::string k, float x, float y, float z, int m, ObjectTag t, bool a) : Object(h, k, x, y, z, m, t, a)
 {
 	m_tag = ObjectTag::E_DOOR;
 	m_direction = d;

@@ -2,7 +2,6 @@
 #include <HAPI_lib.h>
 
 #include "Object.h"
-#include "EnvironmentObject.h"
 
 enum class DoorDirection{
 	E_UP,
@@ -11,7 +10,7 @@ enum class DoorDirection{
 	E_RIGHT
 };
 
-class DoorObject : public EnvironmentObject {
+class DoorObject : public Object {
 private:
 	DoorDirection m_direction;
 public:

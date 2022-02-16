@@ -22,7 +22,7 @@ void StatBar::SetValue(unsigned int n)
 //Render a default shape with a length based on the value of the slider
 void StatBar::Render(Visualisation& v)
 {
-	unsigned int amountToRender = m_currentValue / m_maxValue;
+	float amountToRender = (float)m_currentValue / (float)m_maxValue;
 	amountToRender *= 10;
 
 	v.RenderDefault(m_screenPosition, (unsigned int)amountToRender * 100, 20, m_colour);

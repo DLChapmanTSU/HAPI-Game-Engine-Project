@@ -5,7 +5,6 @@
 #include "PlayerObject.h"
 #include "BulletObject.h"
 #include "WallObject.h"
-#include "EnvironmentObject.h"
 #include "DoorObject.h"
 #include "Map.h"
 #include "Room.h"
@@ -67,7 +66,6 @@ World::World()
 	//std::cout << "Generation Attempted" << std::endl;
 
 	m_map = std::make_shared<Map>(myMap);
-	//m_map->GenerateMap();
 
 	m_roamingEnemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_chasingEnemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
@@ -79,12 +77,6 @@ World::World()
 	m_chasingEnemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_roamingEnemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
 	m_chasingEnemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
-	/*m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
-	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
-	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
-	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
-	m_enemyPool.push_back(std::make_shared<RoamingEnemyObject>(std::pair<int, int>(64, 64), "RoamingEnemy", 480.0f, 100.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));
-	m_enemyPool.push_back(std::make_shared<ChasingEnemyObject>(std::pair<int, int>(64, 64), "ChasingEnemy", 800.0f, 300.0f, 0.0f, 0, ObjectTag::E_ENEMY, false));*/
 	m_bossEnemy = std::make_shared<BossEnemyObject>(std::pair<int, int>(80, 80), "BossEnemy", 300.0f, 100.0f, 0.0f, 16, ObjectTag::E_ENEMY, false);
 	m_audio = std::make_shared<Audio>(Audio());
 
@@ -143,10 +135,9 @@ void World::Run()
 	vis.GenerateSprite("Data\\Explosion.png", "Explosion", 96, 96, true, 384, 96, true);
 	vis.GenerateSprite("Data\\Wall.png", "Wall", 64, 64, false, 64, 64, false);
 
-	//Audio aud;
-	//m_audio = aud;
 	m_audio->LoadSound("Data\\Audio\\shoot.wav", "Shoot", false, 0.0f, 1.0f, 0.1f);
 	m_audio->LoadSound("Data\\Audio\\explosion.wav", "Explosion", false, 0.0f, 1.0f, 1.0f);
+	m_audio->LoadSound("Data\\Audio\\hit.wav", "Hit", false, 0.0f, 1.0f, 1.0f);
 
 	HAPI.SetShowFPS(true);
 	HAPI.LimitFrameRate(60);
@@ -214,7 +205,6 @@ void World::Run()
 			//If not, the game updates as normal
 			if (m_playerObject->GetHealth() <= 0) {
 				SavePoints();
-				HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Game Over", 100);
 				m_restartButton->SetIsActive(true);
 				m_quitButton->SetIsActive(true);
 
@@ -239,9 +229,6 @@ void World::Run()
 				}
 			}
 			else if (CheckAllEnemiesDead() == true && m_map->GetCurrentRoom().GetIsBossRoom() == true && m_bossEnemy->GetIsActive() == false) {
-				GainPoints(500);
-				HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "You Win", 100);
-
 				m_restartButton->SetIsActive(true);
 				m_quitButton->SetIsActive(true);
 
@@ -257,16 +244,17 @@ void World::Run()
 					bool isQuitClicked = m_quitButton->HasClick(mousePos);
 					if (isRestartClicked == true) {
 						std::cout << "Button Pressed" << std::endl;
+						GainPoints(500);
 						ResetWorld();
 					}
 					else if (isQuitClicked == true) {
+						GainPoints(500);
 						SavePoints();
 						HAPI.Close();
 					}
 				}
 			}
 			else if (m_isPaused == true) {
-				HAPI.RenderText(200, 384, HAPI_TColour::BLACK, HAPI_TColour::WHITE, 2.0f, "Paused", 100);
 				m_restartButton->SetIsActive(true);
 				m_quitButton->SetIsActive(true);
 				m_resumeButton->SetIsActive(true);
@@ -336,7 +324,6 @@ void World::Run()
 				//std::cout << timePassed << std::endl;
 
 				if (timePassed >= 20000000.0f) {
-					std::cout << "Tick" << std::endl;
 					CleaUpRuntimeObjects();
 					m_lastUpdate = std::chrono::steady_clock::now();
 					m_playerObject->Update(*this);
@@ -359,10 +346,7 @@ void World::Run()
 			float timeElapsed = (float)std::chrono::duration_cast<std::chrono::nanoseconds>(time - m_lastUpdate).count();
 
 			float fTime = timeElapsed / 20000000.0f;
-			
-			//fTime /= 50.0f;
 
-			//float playerSpeed = *m_playerObject->GetMoveSpeed();
 			m_cameraPosition = *m_playerObject->GetPosition() - Vector3((float)width / 2, (float)height / 2, 0.0f);
 			m_cameraPosition.Lerp(m_cameraPosition, m_cameraPosition + (*m_playerObject->GetVelocity() * m_playerObject->GetMoveSpeed()), fTime);
 
@@ -427,7 +411,6 @@ void World::MoveRoom(DoorDirection& d)
 		}
 	}
 
-	std::cout << "Door Hit" << std::endl;
 	Vector3 playerOffset = *m_playerObject->GetPosition();
 
 	m_map->GetCurrentRoom().SetIsCleared(true);
@@ -461,8 +444,6 @@ void World::MoveRoom(DoorDirection& d)
 	default:
 		break;
 	}
-
-	std::cout << "X: " << m_playerObject->GetPosition()->GetX() << " Y: " << m_playerObject->GetPosition()->GetY() << std::endl;
 
 	//Sets each door to active based on which doors are in the new room
 	if (m_map->GetCurrentRoom().HasUpDoor() == true) {
@@ -538,6 +519,11 @@ void World::GainPoints(const size_t p)
 	m_points = m_points + (p * multiplier);
 }
 
+void World::PlayHitSound()
+{
+	m_audio->PlaySound("Hit");
+}
+
 void World::MasterRender(Visualisation& v, float s)
 {
 	if (m_isPlaying == false) {
@@ -550,7 +536,7 @@ void World::MasterRender(Visualisation& v, float s)
 	std::chrono::steady_clock::time_point time = std::chrono::steady_clock::now();
 	float timePassed = (float)std::chrono::duration_cast<std::chrono::nanoseconds>(time - m_lastAnimation).count();
 	//Updates animation if set time has elapsed
-	if (timePassed >= 33333333.33f) {
+	if (timePassed >= 3333333333.33f) {
 		//Update animations here
 		m_playerObject->SetCurrentFrame(m_playerObject->GetCurrentFrame() + 1);
 		for (std::shared_ptr<Object> o : m_worldObjects) {
@@ -627,8 +613,27 @@ void World::SpawnEnemies()
 		return;
 	}
 
+	int enemyCap{ 0 };
+
+	switch (m_difficulty)
+	{
+	case Difficulty::E_EASY:
+		enemyCap = 2;
+		break;
+	case Difficulty::E_NORMAL:
+		enemyCap = 1;
+		break;
+	case Difficulty::E_HARD:
+		enemyCap = 0;
+		break;
+	default:
+		break;
+	}
+
 	//Randomly decides a number of enemies to spawn
-	int numberToSpawn = std::rand() % points.size();
+	int numberToSpawn = std::rand() % ((int)points.size() - enemyCap);
+
+	
 
 	m_enemyCount = numberToSpawn + 1;
 
@@ -740,6 +745,8 @@ void World::CleaUpRuntimeObjects()
 	}
 }
 
+//Checks to see if the current score is smaller than the highscore
+//Saves the score if so
 void World::SavePoints()
 {
 	std::ifstream reader("Data\\saveData.txt");
